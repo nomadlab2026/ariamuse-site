@@ -128,6 +128,18 @@
       .slice(0, 48) || "image";
   }
 
+  /**
+   * Resolve a site-relative asset path against the site root.
+   * The admin panel is served from /admin/, so "assets/x.jpg" would
+   * otherwise resolve to /admin/assets/x.jpg and 404.
+   */
+  function siteRoot(path) {
+    if (!path) return "";
+    if (/^(https?:)?\/\//i.test(path) || path.startsWith("data:")) return path;
+    if (path.charAt(0) === "/") return path;
+    return "../" + path;
+  }
+
   /** Hash the passcode so it can be stored without exposing it. */
   function hash(text) {
     if (window.crypto && window.crypto.subtle && window.TextEncoder) {
@@ -443,7 +455,9 @@
       if (spec.thumb) {
         var img = el("img", "rep-thumb");
         img.alt = "";
-        img.src = entry[spec.thumb] || "";
+        // The admin lives in /admin/, so a bare "assets/..." path would
+        // resolve to /admin/assets/... — prefix it with the site root.
+        img.src = siteRoot(entry[spec.thumb]);
         img.addEventListener("error", function () {
           img.style.visibility = "hidden";
         });
