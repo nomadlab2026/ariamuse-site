@@ -1,0 +1,276 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8" />
+<meta name="viewport" content="width=device-width, initial-scale=1.0" />
+<title>ARIA MUSE — Digital Couture & Visual Artist</title>
+<meta name="description" content="Aria Muse is a virtual fashion muse crafting editorial imagery, cinematic visual loops and original releases." />
+<meta name="theme-color" content="#0d0d0f" />
+<meta property="og:type" content="website" />
+<meta property="og:title" content="ARIA MUSE" />
+<meta property="og:description" content="Digital Couture & Visual Artist" />
+<meta property="og:image" content="assets/photos/hero.jpg" />
+<meta name="twitter:card" content="summary_large_image" />
+
+<link rel="icon" href="data:image/svg+xml,<svg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 100 100'><rect width='100' height='100' fill='%230d0d0f'/><text x='50' y='68' font-family='Georgia,serif' font-size='58' fill='%23c8a97e' text-anchor='middle'>A</text></svg>" />
+<link rel="preload" as="font" type="font/woff2" href="assets/fonts/PlayfairDisplay-400.woff2" crossorigin />
+<link rel="preload" as="font" type="font/woff2" href="assets/fonts/Inter-300.woff2" crossorigin />
+<link rel="stylesheet" href="assets/css/fonts.css" />
+<link rel="stylesheet" href="assets/css/style.css" />
+</head>
+<body>
+
+<!-- Preloader -->
+<div id="preloader">
+  <div class="preloader-inner">
+    <div class="preloader-name">ARIA MUSE</div>
+    <div class="preloader-bar"><span id="preloader-fill"></span></div>
+  </div>
+</div>
+
+<!-- Header -->
+<header class="site-header" id="site-header">
+  <div class="shell">
+    <nav class="nav">
+      <a href="#top" class="brand" id="brand-name">ARIA MUSE<sup>®</sup></a>
+
+      <div class="nav-links" id="nav-links">
+        <a href="#about">About</a>
+        <a href="#portfolio">Portfolio</a>
+        <a href="#release">Release</a>
+        <a href="#media">Media</a>
+        <a href="#contact">Contact</a>
+      </div>
+
+      <a href="#contact" class="nav-cta">Book Aria</a>
+
+      <button class="nav-toggle" id="nav-toggle" aria-label="Toggle navigation" aria-expanded="false">
+        <span></span><span></span><span></span>
+      </button>
+    </nav>
+  </div>
+</header>
+
+<!-- Mobile drawer -->
+<div class="mobile-menu" id="mobile-menu">
+  <a href="#about"><span>01</span>About</a>
+  <a href="#portfolio"><span>02</span>Portfolio</a>
+  <a href="#release"><span>03</span>Release</a>
+  <a href="#media"><span>04</span>Media</a>
+  <a href="#contact"><span>05</span>Contact</a>
+</div>
+
+<main id="top">
+
+  <!-- Hero -->
+  <section class="hero" id="hero">
+    <div class="hero-media">
+      <img src="assets/photos/hero.jpg" alt="Aria Muse hero portrait" id="hero-image" fetchpriority="high" />
+    </div>
+    <div class="hero-scrim"></div>
+
+    <div class="shell hero-content">
+      <p class="eyebrow hero-eyebrow" id="hero-eyebrow">Autumn / Winter 2026</p>
+      <h1 class="display hero-title" id="hero-title">ARIA MUSE</h1>
+      <p class="lede hero-sub" id="hero-sub"></p>
+      <div class="hero-actions" id="hero-actions"></div>
+    </div>
+
+    <div class="scroll-cue">Scroll</div>
+  </section>
+
+  <!-- Ticker -->
+  <div class="ticker" id="ticker">
+    <div class="ticker-track" id="ticker-track"></div>
+  </div>
+
+  <!-- About -->
+  <section class="section about" id="about">
+    <div class="shell">
+      <div class="section-head reveal">
+        <div>
+          <p class="eyebrow" id="about-eyebrow">The Artist</p>
+          <h2 id="about-title">Between Couture and Code</h2>
+        </div>
+      </div>
+
+      <div class="about-grid">
+        <div class="about-copy reveal">
+          <p id="about-body"></p>
+          <div class="stats" id="about-stats"></div>
+        </div>
+
+        <figure class="about-figure reveal">
+          <img src="assets/photos/portrait.jpg" alt="Portrait of Aria Muse" id="about-portrait" />
+          <figcaption id="about-caption">Aria Muse — Studio Portrait</figcaption>
+        </figure>
+      </div>
+    </div>
+  </section>
+
+  <!-- Portfolio -->
+  <section class="section portfolio" id="portfolio">
+    <div class="shell">
+      <div class="section-head reveal">
+        <div>
+          <p class="eyebrow" id="gallery-eyebrow">Selected Work</p>
+          <h2 id="gallery-title">Portfolio</h2>
+        </div>
+      </div>
+      <div class="gallery-grid" id="gallery-grid"></div>
+    </div>
+  </section>
+
+  <!-- Filmstrip -->
+  <section class="filmstrip" id="filmstrip">
+    <div class="shell">
+      <div class="filmstrip-head">
+        <div>
+          <p class="eyebrow" id="filmstrip-eyebrow">Social Feed</p>
+          <h3 class="filmstrip-title" id="filmstrip-title">Latest Frames</h3>
+        </div>
+        <span class="filmstrip-hint">Hover to pause · Click to enlarge</span>
+      </div>
+    </div>
+    <div class="filmstrip-window">
+      <div class="filmstrip-track" id="filmstrip-track"></div>
+    </div>
+  </section>
+
+  <!-- Release -->
+  <section class="section release" id="release">
+    <div class="shell">
+      <div class="section-head reveal">
+        <div>
+          <p class="eyebrow" id="release-eyebrow">Coming Soon</p>
+          <h2 id="release-title">VELVET STATIC</h2>
+        </div>
+        <span class="release-date-badge" id="release-badge">Incoming</span>
+      </div>
+
+      <div class="release-grid">
+        <div class="release-cover reveal">
+          <img src="assets/photos/album-cover.jpg" alt="Album cover art" id="release-cover" />
+        </div>
+
+        <div class="release-copy reveal">
+          <p class="release-artist" id="release-artist"></p>
+          <p class="release-desc" id="release-desc"></p>
+
+          <div class="countdown" id="countdown">
+            <div class="countdown-cell">
+              <div class="countdown-value" id="cd-days">--</div>
+              <div class="countdown-label">Days</div>
+            </div>
+            <div class="countdown-cell">
+              <div class="countdown-value" id="cd-hours">--</div>
+              <div class="countdown-label">Hours</div>
+            </div>
+            <div class="countdown-cell">
+              <div class="countdown-value" id="cd-minutes">--</div>
+              <div class="countdown-label">Minutes</div>
+            </div>
+            <div class="countdown-cell">
+              <div class="countdown-value" id="cd-seconds">--</div>
+              <div class="countdown-label">Seconds</div>
+            </div>
+          </div>
+
+          <div class="release-links" id="release-links"></div>
+        </div>
+      </div>
+    </div>
+  </section>
+
+  <!-- Media -->
+  <section class="section media" id="media">
+    <div class="shell">
+      <div class="section-head reveal">
+        <div>
+          <p class="eyebrow" id="media-eyebrow">Elsewhere</p>
+          <h2 id="media-title">Follow Aria</h2>
+        </div>
+      </div>
+      <div class="media-grid" id="media-grid"></div>
+    </div>
+  </section>
+
+  <!-- Contact -->
+  <section class="section contact" id="contact">
+    <div class="shell">
+      <div class="section-head reveal">
+        <div>
+          <p class="eyebrow" id="contact-eyebrow">Contact</p>
+          <h2 id="contact-title">Collaborate With Aria</h2>
+        </div>
+      </div>
+
+      <div class="contact-grid">
+        <div class="reveal">
+          <p class="contact-blurb" id="contact-blurb"></p>
+          <div class="contact-list" id="contact-list"></div>
+          <p class="contact-note" id="contact-note"></p>
+        </div>
+
+        <form class="form reveal" id="contact-form">
+          <div class="form-row">
+            <div class="field">
+              <label for="cf-name">Your Name</label>
+              <input id="cf-name" name="name" type="text" placeholder="Jane Doe" required />
+            </div>
+            <div class="field">
+              <label for="cf-email">Email</label>
+              <input id="cf-email" name="email" type="email" placeholder="jane@studio.com" required />
+            </div>
+          </div>
+          <div class="field">
+            <label for="cf-subject">Subject</label>
+            <input id="cf-subject" name="subject" type="text" placeholder="Booking request" />
+          </div>
+          <div class="field">
+            <label for="cf-message">Message</label>
+            <textarea id="cf-message" name="message" placeholder="Tell us about the project…" required></textarea>
+          </div>
+          <div>
+            <button type="submit" class="btn btn--dark">
+              <span>Send Message</span>
+              <span class="arrow">→</span>
+            </button>
+          </div>
+          <p class="form-status" id="form-status"></p>
+        </form>
+      </div>
+    </div>
+  </section>
+
+</main>
+
+<!-- Footer -->
+<footer class="site-footer">
+  <div class="shell">
+    <div class="footer-top">
+      <div class="footer-wordmark display">ARIA MUSE</div>
+      <nav class="footer-nav" id="footer-nav"></nav>
+    </div>
+    <div class="footer-bottom">
+      <span id="footer-copy">© 2026 Aria Muse. All rights reserved.</span>
+      <span id="footer-location"></span>
+      <a class="admin-link" href="admin/">Studio Admin</a>
+    </div>
+  </div>
+</footer>
+
+<!-- Lightbox -->
+<div class="lightbox" id="lightbox" role="dialog" aria-modal="true" aria-label="Image viewer">
+  <button class="lightbox-close" id="lightbox-close" aria-label="Close">✕</button>
+  <button class="lightbox-nav lightbox-nav--prev" id="lightbox-prev" aria-label="Previous">←</button>
+  <figure class="lightbox-figure">
+    <img src="" alt="" id="lightbox-image" />
+    <figcaption class="lightbox-caption" id="lightbox-caption"></figcaption>
+  </figure>
+  <button class="lightbox-nav lightbox-nav--next" id="lightbox-next" aria-label="Next">→</button>
+</div>
+
+<script src="assets/js/site.js"></script>
+</body>
+</html>
