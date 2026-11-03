@@ -408,6 +408,29 @@
 
       spec.fields.forEach(function (f) {
         var wrap = el("label", "field");
+
+        if (f.type === "checkbox") {
+          wrap.className = "field field--inline";
+          var box = el("input");
+          box.type = "checkbox";
+          box.checked = !!entry[f.key];
+          box.addEventListener("change", function () {
+            entry[f.key] = box.checked;
+            // Only one platform can hold the featured slot.
+            if (box.checked && spec.exclusiveKey === f.key) {
+              list.forEach(function (other) {
+                if (other !== entry) other[spec.exclusiveKey] = false;
+              });
+            }
+            renderRepeater(containerId, list, spec, onChange);
+            onChange();
+          });
+          wrap.appendChild(box);
+          wrap.appendChild(el("span", "field-label", f.label));
+          fields.appendChild(wrap);
+          return;
+        }
+
         wrap.appendChild(el("span", "field-label", f.label));
 
         if (f.type === "textarea") {
@@ -536,9 +559,12 @@
         key: "icon",
         label: "Icon",
         type: "select",
-        options: ["instagram", "tiktok", "youtube", "x", "spotify", "sparkle", "link"]
-      }
-    ]
+        options: ["fanvue", "instagram", "tiktok", "youtube", "x", "spotify", "sparkle", "link"]
+      },
+      { key: "note", label: "Description (featured card only)", type: "textarea", rows: 2 },
+      { key: "featured", label: "Feature as the main card (one only)", type: "checkbox" }
+    ],
+    exclusiveKey: "featured"
   };
 
   var GALLERY_SPEC = {
