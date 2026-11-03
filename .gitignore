@@ -1,0 +1,19 @@
+# OS / editor noise
+.DS_Store
+Thumbs.db
+desktop.ini
+*.swp
+.idea/
+.vscode/
+
+# Source photography (large originals — processed copies live in assets/photos/)
+*.png
+!assets/photos/**/*.jpg
+
+# Local scratch
+node_modules/
+*.log
+
+# Credentials — never commit
+*Aria Muse Site token.txt
+*token*.txt
