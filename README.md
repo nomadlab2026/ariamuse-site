@@ -101,7 +101,13 @@ CNAME                   绑定域名 nomadlab.one
 | A | `@` | `185.199.109.153` | **DNS only** |
 | A | `@` | `185.199.110.153` | **DNS only** |
 | A | `@` | `185.199.111.153` | **DNS only** |
+| AAAA | `@` | `2606:50c0:8000::153` | **DNS only** |
+| AAAA | `@` | `2606:50c0:8001::153` | **DNS only** |
+| AAAA | `@` | `2606:50c0:8002::153` | **DNS only** |
+| AAAA | `@` | `2606:50c0:8003::153` | **DNS only** |
 | CNAME | `www` | `nomadlab2026.github.io` | **DNS only** |
+
+✅ **已全部配置完成**（2026-11-04），HTTPS 证书已签发并强制开启。
 
 > ⚠️ **Proxy status 一定要选 "DNS only"（灰色云朵）**，不要开橙色代理。
 > GitHub Pages 需要自己签发和续期 HTTPS 证书，开启 Cloudflare 代理会导致证书和跳转出问题。
