@@ -93,36 +93,39 @@ CNAME                   绑定域名 nomadlab.one
 
 ## 四、域名配置（nomadlab.one）
 
-DNS 需要加以下记录（在你买域名的服务商后台操作）：
+域名托管在 Cloudflare。需要在 Cloudflare 的 **DNS → Records** 里加这些记录：
 
-**主域名 `nomadlab.one`**
+| 类型 | 名称 | 指向 | Proxy status |
+|---|---|---|---|
+| A | `@` | `185.199.108.153` | **DNS only**（灰云） |
+| A | `@` | `185.199.109.153` | **DNS only** |
+| A | `@` | `185.199.110.153` | **DNS only** |
+| A | `@` | `185.199.111.153` | **DNS only** |
+| CNAME | `www` | `nomadlab2026.github.io` | **DNS only** |
 
-| 类型 | 主机记录 | 记录值 |
-|---|---|---|
-| A | `@` | `185.199.108.153` |
-| A | `@` | `185.199.109.153` |
-| A | `@` | `185.199.110.153` |
-| A | `@` | `185.199.111.153` |
+> ⚠️ **Proxy status 一定要选 "DNS only"（灰色云朵）**，不要开橙色代理。
+> GitHub Pages 需要自己签发和续期 HTTPS 证书，开启 Cloudflare 代理会导致证书和跳转出问题。
 
-**www 子域名**
+配好后等 DNS 生效（通常几分钟），GitHub 会自动签发 HTTPS 证书，之后在
+**仓库 → Settings → Pages** 里勾上 **Enforce HTTPS** 即可。
 
-| 类型 | 主机记录 | 记录值 |
-|---|---|---|
-| CNAME | `www` | `nomadlab2026.github.io` |
-
-配好后等 DNS 生效（通常几分钟到 48 小时），GitHub 会自动签发 HTTPS 证书。
-
-> 如果想在仓库里换域名，改 `CNAME` 文件的内容，然后点 **Save & Publish**。
+也可以用 Cloudflare API 自动完成（脚本在 `tools/cloudflare_dns.py`）。
 
 ---
 
 ## 五、部署机制
 
-- 代码推到 `main` 分支 → GitHub Actions 自动跑 `.github/workflows/deploy.yml`
-- 工作流把 `index.html`、`admin/`、`assets/`、`data/`、`CNAME` 打包成 `_site/`
-- 部署到 GitHub Pages
+**当前用的是 GitHub Pages 的 branch 部署模式**（`main` 分支根目录即发布目录）：
 
-后台点 **Save & Publish** 会修改 `data/site.json` 并提交 → 触发同一条流水线 → 自动上线。
+```
+main 分支有更新 → GitHub 自动重新构建 → nomadlab.one 更新
+```
+
+后台点 **Save & Publish** 会修改 `data/site.json` 并提交到 `main` → 触发同一条流水线 → 自动上线。
+
+> 仓库里也保留了 `.github/workflows/deploy.yml`，如果你更习惯 Actions 模式，
+> 在仓库 Settings → Pages 把 Source 切成 "GitHub Actions" 即可（需先手动上传一次该文件，
+> 因为 GitHub 禁止通过 API 写入 `.github` 目录）。
 
 **手动触发：** GitHub 仓库 → **Actions** → **Deploy to GitHub Pages** → **Run workflow**
 
@@ -145,6 +148,27 @@ cd "项目目录"
 python -m http.server 8899
 # 打开 http://127.0.0.1:8899
 ```
+
+---
+
+## 八、仓库与部署脚本
+
+| 项目 | 值 |
+|---|---|
+| GitHub 仓库 | https://github.com/nomadlab2026/ariamuse-site |
+| 线上地址 | https://nomadlab.one |
+| 后台地址 | https://nomadlab.one/admin/ |
+| 发布方式 | GitHub Pages（`main` 分支根目录） |
+
+`tools/` 目录里的脚本（不属于线上站点，不会上传到 Pages）：
+
+| 脚本 | 用途 |
+|---|---|
+| `prepare_photos.py` | 把根目录的 PNG 原图压缩归档成 `assets/photos/` |
+| `gen_placeholders.py` | 生成抽象占位图 |
+| `fetch_fonts.py` | 下载并自托管 Google 字体 |
+| `publish_via_api.py` | 通过 GitHub API 发布站点（git 端点不通时的备用方案） |
+| `cloudflare_dns.py` | 通过 Cloudflare API 配置 DNS 记录 |
 
 ---
 
