@@ -1,0 +1,6 @@
+# Normalise line endings so the deployed site is identical everywhere.
+* text=auto eol=lf
+
+*.jpg binary
+*.png binary
+*.woff2 binary
