@@ -1,0 +1,113 @@
+{
+  "site": {
+    "name": "ARIA MUSE",
+    "shortName": "AM",
+    "tagline": "Digital Couture & Visual Artist",
+    "description": "Aria Muse is a virtual fashion muse crafting editorial imagery, cinematic visual loops and original releases.",
+    "location": "Available Worldwide",
+    "copyrightYear": 2026
+  },
+  "hero": {
+    "image": "assets/photos/hero.jpg",
+    "eyebrow": "Resort Collection 2026",
+    "title": "ARIA MUSE",
+    "subtitle": "A virtual muse in perpetual motion — editorial imagery, cinematic moments and original releases.",
+    "primaryCta": { "label": "Enter Portfolio", "href": "#portfolio" },
+    "secondaryCta": { "label": "Latest Release", "href": "#release" }
+  },
+  "about": {
+    "eyebrow": "The Artist",
+    "title": "Between Couture and Code",
+    "body": "Aria Muse operates at the intersection of high fashion and emerging technology. Every frame is art-directed, every release is produced independently, and every image exists to make the digital world feel a little more tactile.",
+    "stats": [
+      { "label": "Releases", "value": "12" },
+      { "label": "Campaigns", "value": "40+" },
+      { "label": "Followers", "value": "210K" }
+    ],
+    "portrait": "assets/photos/portrait.jpg",
+    "caption": "Aria Muse — Villa Portrait"
+  },
+  "marquee": {
+    "enabled": true,
+    "items": [
+      "New Single Out Now",
+      "Official Merch Drop",
+      "Resort Collection Vol. IV",
+      "Limited Edition Print",
+      "Tour Announcement Soon"
+    ]
+  },
+  "release": {
+    "enabled": true,
+    "eyebrow": "Coming Soon",
+    "title": "VELVET STATIC",
+    "artist": "ARIA MUSE",
+    "releaseDate": "2026-12-18",
+    "cover": "assets/photos/album-cover.jpg",
+    "description": "Five tracks of slow-burn electronic pop recorded for the Resort 2026 campaign. Limited vinyl pressing, first-week digital pre-sale.",
+    "links": [
+      { "label": "Pre-Save on Spotify", "url": "https://open.spotify.com/" },
+      { "label": "Apple Music", "url": "https://music.apple.com/" },
+      { "label": "YouTube", "url": "https://www.youtube.com/" }
+    ]
+  },
+  "gallery": {
+    "eyebrow": "Selected Work",
+    "title": "Portfolio",
+    "items": [
+      { "src": "assets/photos/gallery/look-01.jpg", "caption": "Resort 2026 — Look 01", "alt": "Editorial resort portrait in a sheer robe by the pool" },
+      { "src": "assets/photos/gallery/look-02.jpg", "caption": "Resort 2026 — Look 02", "alt": "Editorial resort portrait in natural light" },
+      { "src": "assets/photos/gallery/look-03.jpg", "caption": "Resort 2026 — Look 03", "alt": "Editorial resort portrait by the sea" },
+      { "src": "assets/photos/gallery/look-04.jpg", "caption": "Resort 2026 — Look 04", "alt": "Editorial resort portrait at golden hour" },
+      { "src": "assets/photos/gallery/look-05.jpg", "caption": "Resort 2026 — Look 05", "alt": "Editorial resort portrait under white arches" },
+      { "src": "assets/photos/gallery/look-06.jpg", "caption": "Resort 2026 — Look 06", "alt": "Editorial resort portrait on the terrace" },
+      { "src": "assets/photos/gallery/look-07.jpg", "caption": "Resort 2026 — Look 07", "alt": "Editorial resort portrait by the pool" },
+      { "src": "assets/photos/gallery/look-08.jpg", "caption": "Resort 2026 — Look 08", "alt": "Editorial resort portrait in warm light" },
+      { "src": "assets/photos/gallery/look-09.jpg", "caption": "Resort 2026 — Look 09", "alt": "Editorial resort portrait outdoors" },
+      { "src": "assets/photos/gallery/look-10.jpg", "caption": "Resort 2026 — Look 10", "alt": "Editorial resort portrait in a villa" },
+      { "src": "assets/photos/gallery/look-11.jpg", "caption": "Resort 2026 — Look 11", "alt": "Editorial resort portrait by the ocean" },
+      { "src": "assets/photos/gallery/look-12.jpg", "caption": "Resort 2026 — Look 12", "alt": "Editorial resort portrait, final look" }
+    ]
+  },
+  "social": {
+    "eyebrow": "Social Feed",
+    "title": "Latest Frames",
+    "items": [
+      { "src": "assets/photos/social/post-01.jpg", "caption": "@ariamuse", "alt": "Lifestyle social post" },
+      { "src": "assets/photos/social/post-02.jpg", "caption": "@ariamuse", "alt": "Lifestyle social post" },
+      { "src": "assets/photos/social/post-03.jpg", "caption": "@ariamuse", "alt": "Lifestyle social post" },
+      { "src": "assets/photos/social/post-04.jpg", "caption": "@ariamuse", "alt": "Lifestyle social post" },
+      { "src": "assets/photos/social/post-05.jpg", "caption": "@ariamuse", "alt": "Lifestyle social post" },
+      { "src": "assets/photos/social/post-06.jpg", "caption": "@ariamuse", "alt": "Lifestyle social post" },
+      { "src": "assets/photos/social/post-07.jpg", "caption": "@ariamuse", "alt": "Lifestyle social post" },
+      { "src": "assets/photos/social/post-08.jpg", "caption": "@ariamuse", "alt": "Lifestyle social post" },
+      { "src": "assets/photos/social/post-09.jpg", "caption": "@ariamuse", "alt": "Lifestyle social post" },
+      { "src": "assets/photos/social/post-10.jpg", "caption": "@ariamuse", "alt": "Lifestyle social post" },
+      { "src": "assets/photos/social/post-11.jpg", "caption": "@ariamuse", "alt": "Lifestyle social post" },
+      { "src": "assets/photos/social/post-12.jpg", "caption": "@ariamuse", "alt": "Lifestyle social post" }
+    ]
+  },
+  "media": {
+    "eyebrow": "Elsewhere",
+    "title": "Follow Aria",
+    "links": [
+      { "label": "Instagram", "handle": "@ariamuse", "url": "https://instagram.com/", "icon": "instagram" },
+      { "label": "TikTok", "handle": "@ariamuse", "url": "https://tiktok.com/", "icon": "tiktok" },
+      { "label": "YouTube", "handle": "Aria Muse", "url": "https://youtube.com/", "icon": "youtube" },
+      { "label": "X", "handle": "@ariamuse", "url": "https://x.com/", "icon": "x" },
+      { "label": "Fanvue", "handle": "ariamuse", "url": "https://fanvue.com/", "icon": "sparkle" },
+      { "label": "Spotify", "handle": "Aria Muse", "url": "https://spotify.com/", "icon": "spotify" }
+    ]
+  },
+  "contact": {
+    "eyebrow": "Contact",
+    "title": "Collaborate With Aria",
+    "blurb": "For bookings, press enquiries, brand partnerships or licensing, reach out below.",
+    "email": "hello@ariamuse.com",
+    "bookingEmail": "bookings@ariamuse.com",
+    "pressEmail": "press@ariamuse.com",
+    "formEnabled": true,
+    "formNote": "Replies within 48 hours.",
+    "socialNote": "DMs are open — say hello."
+  }
+}
