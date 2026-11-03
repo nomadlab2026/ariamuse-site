@@ -47,6 +47,8 @@
       '<svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.5" stroke-linecap="round"><circle cx="12" cy="12" r="9.2"/><path d="M7.6 9.4c3-.8 6.3-.6 9.1.7"/><path d="M8.3 12.5c2.4-.6 5-.5 7.3.6"/><path d="M9 15.4c1.9-.4 3.9-.3 5.6.5"/></svg>',
     sparkle:
       '<svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.3" stroke-linejoin="round"><path d="M12 2.5l2.3 6.2 6.2 2.3-6.2 2.3L12 19.5l-2.3-6.2L3.5 11l6.2-2.3z"/><path d="M18.8 16.2l.8 2.2 2.2.8-2.2.8-.8 2.2-.8-2.2-2.2-.8 2.2-.8z"/></svg>',
+    fanvue:
+      '<svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.4" stroke-linecap="round" stroke-linejoin="round"><path d="M5 4.5h14l-9.4 9.1h5.2"/><path d="M5 19.5h14l-9.4-9.1"/></svg>',
     link:
       '<svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.4"><path d="M10 13.5a4 4 0 0 0 5.7.4l3-3a4 4 0 1 0-5.7-5.7l-1.5 1.5"/><path d="M14 10.5a4 4 0 0 0-5.7-.4l-3 3a4 4 0 1 0 5.7 5.7l1.5-1.5"/></svg>'
   };
@@ -82,6 +84,28 @@
     var year = data.site.copyrightYear || new Date().getFullYear();
     setText("footer-copy", "© " + year + " " + name + ". All rights reserved.");
     setText("footer-location", data.site.location || "");
+
+    // Header call-to-action: point it at the featured platform so the
+    // subscribe path is always one click away.
+    var featured = (data.media && data.media.links || []).filter(function (l) {
+      return l.featured;
+    })[0];
+    var cta = $("nav-cta");
+    if (cta && featured) {
+      cta.textContent = "Subscribe";
+      cta.href = featured.url || "#";
+      cta.target = "_blank";
+      cta.rel = "noopener noreferrer sponsored";
+    }
+
+    // Footer: add the featured platform as the first link.
+    if (footerNav && featured) {
+      var f = el("a", null, "Fanvue");
+      f.href = featured.url || "#";
+      f.target = "_blank";
+      f.rel = "noopener noreferrer sponsored";
+      footerNav.insertBefore(f, footerNav.firstChild);
+    }
   }
 
   function renderHero() {
@@ -116,6 +140,20 @@
       a.appendChild(el("span", "arrow", "→"));
       actions.appendChild(a);
     });
+
+    // A subscribe shortcut to the featured platform, if one is set.
+    var featured = (data.media && data.media.links || []).filter(function (l) {
+      return l.featured;
+    })[0];
+    if (featured) {
+      var sub = el("a", "btn btn--gold");
+      sub.href = featured.url || "#";
+      sub.target = "_blank";
+      sub.rel = "noopener noreferrer sponsored";
+      sub.appendChild(el("span", null, "Subscribe on " + (featured.label || "Fanvue")));
+      sub.appendChild(el("span", "arrow", "↗"));
+      actions.appendChild(sub);
+    }
   }
 
   function renderTicker() {
@@ -343,12 +381,46 @@
     var media = data.media || {};
     setText("media-eyebrow", media.eyebrow || "");
     setText("media-title", media.title || "");
+    setText("media-blurb", media.blurb || "");
 
     var grid = $("media-grid");
     if (!grid) return;
     grid.innerHTML = "";
 
-    (media.links || []).forEach(function (l) {
+    var links = media.links || [];
+
+    // The featured platform gets a full-width card above the rest.
+    var featured = null;
+    links.forEach(function (l) {
+      if (!featured && l.featured) featured = l;
+    });
+
+    if (featured) {
+      var fa = el("a", "media-card media-card--featured");
+      fa.href = featured.url || "#";
+      fa.target = "_blank";
+      fa.rel = "noopener noreferrer";
+
+      var fIcon = el("div", "media-icon");
+      fIcon.innerHTML = iconFor(featured.icon || featured.label);
+      fa.appendChild(fIcon);
+
+      var fBody = el("div", "media-featured-body");
+      fBody.appendChild(el("div", "media-featured-badge", "Subscribe"));
+      fBody.appendChild(el("div", "media-label media-label--lg", featured.label || ""));
+      if (featured.handle) fBody.appendChild(el("div", "media-handle", featured.handle));
+      if (featured.note) fBody.appendChild(el("div", "media-note", featured.note));
+      fa.appendChild(fBody);
+
+      var fArrow = el("div", "media-arrow", "→");
+      fa.appendChild(fArrow);
+
+      grid.appendChild(fa);
+    }
+
+    links.forEach(function (l) {
+      if (l === featured) return;
+
       var a = el("a", "media-card");
       a.href = l.url || "#";
       a.target = "_blank";
