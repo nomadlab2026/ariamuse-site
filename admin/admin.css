@@ -390,6 +390,18 @@ img { display: block; max-width: 100%; }
 
 .rep-fields { display: grid; gap: 0.75rem; }
 
+.rep-fields .field--inline {
+  margin-bottom: 0;
+  justify-content: flex-start;
+}
+
+.rep-fields .field--inline .field-label {
+  text-transform: none;
+  letter-spacing: 0.02em;
+  font-weight: 400;
+  color: var(--muted);
+}
+
 .rep-inline { display: grid; grid-template-columns: repeat(auto-fit, minmax(150px, 1fr)); gap: 0.75rem; }
 
 .rep-actions { display: grid; gap: 0.35rem; }
