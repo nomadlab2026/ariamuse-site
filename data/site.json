@@ -210,42 +210,33 @@
   "media": {
     "eyebrow": "Elsewhere",
     "title": "Follow Aria",
+    "blurb": "Exclusive content, early releases and behind-the-scenes — subscribe on Fanvue for the full archive.",
     "links": [
       {
+        "label": "Fanvue",
+        "handle": "ariamuse",
+        "url": "https://www.fanvue.com/ariamuse",
+        "icon": "fanvue",
+        "featured": true,
+        "note": "Exclusive content & early releases"
+      },
+      {
         "label": "Instagram",
-        "handle": "@ariamuse",
-        "url": "https://instagram.com/",
+        "handle": "@ariamuse_ai",
+        "url": "https://www.instagram.com/ariamuse_ai",
         "icon": "instagram"
       },
       {
         "label": "TikTok",
-        "handle": "@ariamuse",
-        "url": "https://tiktok.com/",
+        "handle": "@airamuse",
+        "url": "https://www.tiktok.com/@airamuse",
         "icon": "tiktok"
       },
       {
-        "label": "YouTube",
-        "handle": "Aria Muse",
-        "url": "https://youtube.com/",
-        "icon": "youtube"
-      },
-      {
         "label": "X",
-        "handle": "@ariamuse",
-        "url": "https://x.com/",
+        "handle": "@ariamuse_ai",
+        "url": "https://x.com/ariamuse_ai",
         "icon": "x"
-      },
-      {
-        "label": "Fanvue",
-        "handle": "ariamuse",
-        "url": "https://fanvue.com/",
-        "icon": "sparkle"
-      },
-      {
-        "label": "Spotify",
-        "handle": "Aria Muse",
-        "url": "https://spotify.com/",
-        "icon": "spotify"
       }
     ]
   },
