@@ -1,0 +1,459 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8" />
+<meta name="viewport" content="width=device-width, initial-scale=1.0" />
+<title>Aria Muse — Studio Admin</title>
+<meta name="robots" content="noindex, nofollow" />
+<meta name="theme-color" content="#f4f1ec" />
+<link rel="icon" href="data:image/svg+xml,<svg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 100 100'><rect width='100' height='100' fill='%230d0d0f'/><text x='50' y='68' font-family='Georgia,serif' font-size='58' fill='%23c8a97e' text-anchor='middle'>A</text></svg>" />
+<link rel="stylesheet" href="admin.css" />
+</head>
+<body>
+
+<!-- ================= GATE ================= -->
+<div class="gate" id="gate">
+  <div class="gate-card">
+    <div class="gate-brand">ARIA MUSE<sup>®</sup></div>
+    <p class="gate-sub">Studio Admin</p>
+
+    <div id="gate-error" class="gate-error" hidden></div>
+
+    <label class="field">
+      <span class="field-label">Access passcode</span>
+      <input type="password" id="passcode" placeholder="Enter your passcode" autocomplete="current-password" />
+    </label>
+
+    <button class="btn btn--solid" id="unlock-btn">Unlock Studio</button>
+
+    <details class="gate-help">
+      <summary>First time here?</summary>
+      <div class="gate-help-body">
+        <p>You'll need two things:</p>
+        <ol>
+          <li><strong>The passcode</strong> — given to you by whoever set up this site.</li>
+          <li><strong>A GitHub token</strong> — created once, then saved in this browser.</li>
+        </ol>
+        <p class="muted">Your token stays in this browser only and is sent straight to GitHub. See the setup guide for the exact steps.</p>
+      </div>
+    </details>
+  </div>
+</div>
+
+<!-- ================= APP ================= -->
+<div class="app" id="app" hidden>
+
+  <!-- Top bar -->
+  <header class="topbar">
+    <div class="topbar-left">
+      <span class="topbar-brand">ARIA MUSE<sup>®</sup></span>
+      <span class="topbar-sep"></span>
+      <span class="topbar-label">Studio Admin</span>
+    </div>
+    <div class="topbar-right">
+      <span class="save-state" id="save-state">All changes saved</span>
+      <button class="btn btn--ghost btn--sm" id="logout-btn">Lock</button>
+      <button class="btn btn--solid btn--sm" id="publish-btn">Save &amp; Publish</button>
+    </div>
+  </header>
+
+  <!-- Tabs -->
+  <nav class="tabs" id="tabs">
+    <button class="tab is-active" data-tab="basics">Basics</button>
+    <button class="tab" data-tab="hero">Hero</button>
+    <button class="tab" data-tab="release">Release</button>
+    <button class="tab" data-tab="gallery">Photos</button>
+    <button class="tab" data-tab="media">Media</button>
+    <button class="tab" data-tab="contact">Contact</button>
+    <button class="tab" data-tab="settings">Settings</button>
+  </nav>
+
+  <main class="content" id="content">
+
+    <!-- ---------- BASICS ---------- -->
+    <section class="panel is-active" data-panel="basics">
+      <h2 class="panel-title">Site Identity</h2>
+      <p class="panel-hint">Your name, tagline and basic details. These appear in the header, footer and browser tab.</p>
+
+      <div class="grid-2">
+        <label class="field">
+          <span class="field-label">Site name</span>
+          <input type="text" data-bind="site.name" placeholder="ARIA MUSE" />
+        </label>
+        <label class="field">
+          <span class="field-label">Tagline</span>
+          <input type="text" data-bind="site.tagline" placeholder="Digital Couture & Visual Artist" />
+        </label>
+      </div>
+
+      <label class="field">
+        <span class="field-label">Short description <em>— used for search results &amp; social previews</em></span>
+        <textarea rows="3" data-bind="site.description"></textarea>
+      </label>
+
+      <div class="grid-2">
+        <label class="field">
+          <span class="field-label">Location / availability</span>
+          <input type="text" data-bind="site.location" placeholder="Available Worldwide" />
+        </label>
+        <label class="field">
+          <span class="field-label">Copyright year</span>
+          <input type="number" data-bind="site.copyrightYear" />
+        </label>
+      </div>
+
+      <h2 class="panel-title panel-title--spaced">About Section</h2>
+      <div class="grid-2">
+        <label class="field">
+          <span class="field-label">Section label</span>
+          <input type="text" data-bind="about.eyebrow" placeholder="The Artist" />
+        </label>
+        <label class="field">
+          <span class="field-label">Heading</span>
+          <input type="text" data-bind="about.title" placeholder="Between Couture and Code" />
+        </label>
+      </div>
+
+      <label class="field">
+        <span class="field-label">Bio text <em>— each paragraph on its own line</em></span>
+        <textarea rows="6" data-bind="about.body" data-type="lines"></textarea>
+      </label>
+
+      <label class="field">
+        <span class="field-label">Portrait photo path</span>
+        <input type="text" data-bind="about.portrait" placeholder="assets/photos/portrait.jpg" />
+        <span class="field-hint">Upload a replacement in the <strong>Photos</strong> tab, then paste its path here.</span>
+      </label>
+
+      <label class="field">
+        <span class="field-label">Portrait caption</span>
+        <input type="text" data-bind="about.caption" placeholder="Aria Muse — Studio Portrait" />
+      </label>
+
+      <h3 class="panel-subtitle">Stat numbers</h3>
+      <div class="repeater" id="stats-repeater"></div>
+      <button class="btn btn--ghost btn--sm" data-add="stats">+ Add stat</button>
+    </section>
+
+    <!-- ---------- HERO ---------- -->
+    <section class="panel" data-panel="hero">
+      <h2 class="panel-title">Hero Banner</h2>
+      <p class="panel-hint">The full-screen image at the very top of your site.</p>
+
+      <label class="field">
+        <span class="field-label">Hero image path</span>
+        <input type="text" data-bind="hero.image" placeholder="assets/photos/hero.jpg" />
+      </label>
+
+      <div class="grid-2">
+        <label class="field">
+          <span class="field-label">Small label above the title</span>
+          <input type="text" data-bind="hero.eyebrow" placeholder="Autumn / Winter 2026" />
+        </label>
+        <label class="field">
+          <span class="field-label">Main title</span>
+          <input type="text" data-bind="hero.title" placeholder="ARIA MUSE" />
+        </label>
+      </div>
+
+      <label class="field">
+        <span class="field-label">Intro text</span>
+        <textarea rows="3" data-bind="hero.subtitle"></textarea>
+      </label>
+
+      <div class="grid-2">
+        <label class="field">
+          <span class="field-label">Primary button label</span>
+          <input type="text" data-bind="hero.primaryCta.label" placeholder="Enter Portfolio" />
+        </label>
+        <label class="field">
+          <span class="field-label">Primary button link</span>
+          <input type="text" data-bind="hero.primaryCta.href" placeholder="#portfolio" />
+        </label>
+      </div>
+
+      <div class="grid-2">
+        <label class="field">
+          <span class="field-label">Secondary button label</span>
+          <input type="text" data-bind="hero.secondaryCta.label" placeholder="Latest Release" />
+        </label>
+        <label class="field">
+          <span class="field-label">Secondary button link</span>
+          <input type="text" data-bind="hero.secondaryCta.href" placeholder="#release" />
+        </label>
+      </div>
+
+      <h2 class="panel-title panel-title--spaced">Scrolling News Ticker</h2>
+      <label class="field field--inline">
+        <input type="checkbox" data-bind="marquee.enabled" data-type="bool" />
+        <span class="field-label">Show the ticker</span>
+      </label>
+      <label class="field">
+        <span class="field-label">Ticker lines <em>— one per line</em></span>
+        <textarea rows="4" data-bind="marquee.items" data-type="lines"></textarea>
+      </label>
+    </section>
+
+    <!-- ---------- RELEASE ---------- -->
+    <section class="panel" data-panel="release">
+      <h2 class="panel-title">Release / Album Teaser</h2>
+      <p class="panel-hint">The section announcing your next single or album, including a live countdown.</p>
+
+      <label class="field field--inline">
+        <input type="checkbox" data-bind="release.enabled" data-type="bool" />
+        <span class="field-label">Show the release section</span>
+      </label>
+
+      <div class="grid-2">
+        <label class="field">
+          <span class="field-label">Label</span>
+          <input type="text" data-bind="release.eyebrow" placeholder="Coming Soon" />
+        </label>
+        <label class="field">
+          <span class="field-label">Release title</span>
+          <input type="text" data-bind="release.title" placeholder="VELVET STATIC" />
+        </label>
+      </div>
+
+      <div class="grid-2">
+        <label class="field">
+          <span class="field-label">Artist line</span>
+          <input type="text" data-bind="release.artist" placeholder="ARIA MUSE" />
+        </label>
+        <label class="field">
+          <span class="field-label">Release date</span>
+          <input type="date" data-bind="release.releaseDate" />
+          <span class="field-hint">The countdown runs until this moment.</span>
+        </label>
+      </div>
+
+      <label class="field">
+        <span class="field-label">Cover art path</span>
+        <input type="text" data-bind="release.cover" placeholder="assets/photos/album-cover.jpg" />
+      </label>
+
+      <label class="field">
+        <span class="field-label">Description</span>
+        <textarea rows="3" data-bind="release.description"></textarea>
+      </label>
+
+      <h3 class="panel-subtitle">Listen links</h3>
+      <div class="repeater" id="release-links-repeater"></div>
+      <button class="btn btn--ghost btn--sm" data-add="releaseLinks">+ Add link</button>
+    </section>
+
+    <!-- ---------- GALLERY ---------- -->
+    <section class="panel" data-panel="gallery">
+      <h2 class="panel-title">Photos</h2>
+      <p class="panel-hint">Drag photos straight in — they're compressed and uploaded to your site automatically.</p>
+
+      <div class="grid-2">
+        <label class="field">
+          <span class="field-label">Section label</span>
+          <input type="text" data-bind="gallery.eyebrow" placeholder="Selected Work" />
+        </label>
+        <label class="field">
+          <span class="field-label">Heading</span>
+          <input type="text" data-bind="gallery.title" placeholder="Portfolio" />
+        </label>
+      </div>
+
+      <div class="dropzone" id="dropzone">
+        <input type="file" id="file-input" accept="image/*" multiple hidden />
+        <div class="dropzone-inner">
+          <div class="dropzone-icon">＋</div>
+          <p class="dropzone-title">Drop photos here</p>
+          <p class="dropzone-hint">or <button type="button" class="linklike" id="browse-btn">choose files</button> · JPG, PNG or WebP</p>
+          <div class="dest-toggle">
+            <label class="dest-opt">
+              <input type="radio" name="upload-dest" value="gallery" checked />
+              <span>Portfolio grid</span>
+            </label>
+            <label class="dest-opt">
+              <input type="radio" name="upload-dest" value="social" />
+              <span>Scrolling filmstrip</span>
+            </label>
+          </div>
+        </div>
+      </div>
+
+      <div class="upload-queue" id="upload-queue" hidden></div>
+
+      <h3 class="panel-subtitle">Portfolio grid <em>— drag the ↑ ↓ buttons to reorder</em></h3>
+      <div class="repeater" id="gallery-repeater"></div>
+      <button class="btn btn--ghost btn--sm" data-add="gallery">+ Add photo by path</button>
+
+      <h3 class="panel-subtitle">Scrolling filmstrip <em>— the social feed below the portfolio</em></h3>
+      <div class="grid-2">
+        <label class="field">
+          <span class="field-label">Section label</span>
+          <input type="text" data-bind="social.eyebrow" placeholder="Social Feed" />
+        </label>
+        <label class="field">
+          <span class="field-label">Heading</span>
+          <input type="text" data-bind="social.title" placeholder="Latest Frames" />
+        </label>
+      </div>
+      <div class="repeater" id="social-repeater"></div>
+      <button class="btn btn--ghost btn--sm" data-add="social">+ Add filmstrip photo</button>
+    </section>
+
+    <!-- ---------- MEDIA ---------- -->
+    <section class="panel" data-panel="media">
+      <h2 class="panel-title">Media Links</h2>
+      <p class="panel-hint">Links out to your social platforms and storefronts.</p>
+
+      <div class="grid-2">
+        <label class="field">
+          <span class="field-label">Section label</span>
+          <input type="text" data-bind="media.eyebrow" placeholder="Elsewhere" />
+        </label>
+        <label class="field">
+          <span class="field-label">Heading</span>
+          <input type="text" data-bind="media.title" placeholder="Follow Aria" />
+        </label>
+      </div>
+
+      <div class="repeater" id="media-repeater"></div>
+      <button class="btn btn--ghost btn--sm" data-add="media">+ Add platform</button>
+    </section>
+
+    <!-- ---------- CONTACT ---------- -->
+    <section class="panel" data-panel="contact">
+      <h2 class="panel-title">Contact</h2>
+      <p class="panel-hint">Where people reach you, and the enquiry form.</p>
+
+      <div class="grid-2">
+        <label class="field">
+          <span class="field-label">Section label</span>
+          <input type="text" data-bind="contact.eyebrow" placeholder="Contact" />
+        </label>
+        <label class="field">
+          <span class="field-label">Heading</span>
+          <input type="text" data-bind="contact.title" placeholder="Collaborate With Aria" />
+        </label>
+      </div>
+
+      <label class="field">
+        <span class="field-label">Intro text</span>
+        <textarea rows="2" data-bind="contact.blurb"></textarea>
+      </label>
+
+      <div class="grid-2">
+        <label class="field">
+          <span class="field-label">General email</span>
+          <input type="email" data-bind="contact.email" placeholder="hello@ariamuse.com" />
+        </label>
+        <label class="field">
+          <span class="field-label">Bookings email</span>
+          <input type="email" data-bind="contact.bookingEmail" placeholder="bookings@ariamuse.com" />
+        </label>
+      </div>
+
+      <label class="field">
+        <span class="field-label">Press email</span>
+        <input type="email" data-bind="contact.pressEmail" placeholder="press@ariamuse.com" />
+      </label>
+
+      <label class="field field--inline">
+        <input type="checkbox" data-bind="contact.formEnabled" data-type="bool" />
+        <span class="field-label">Show the enquiry form</span>
+      </label>
+
+      <label class="field">
+        <span class="field-label">Note under the form</span>
+        <input type="text" data-bind="contact.formNote" placeholder="Replies within 48 hours." />
+      </label>
+
+      <label class="field">
+        <span class="field-label">Social note</span>
+        <input type="text" data-bind="contact.socialNote" placeholder="DMs are open — say hello." />
+      </label>
+
+      <h3 class="panel-subtitle">Form delivery</h3>
+      <label class="field">
+        <span class="field-label">Formspree endpoint <em>— optional</em></span>
+        <input type="text" data-bind="contact.formEndpoint" placeholder="https://formspree.io/f/xxxxxxx" />
+        <span class="field-hint">Leave empty and the form opens the visitor's email app instead. To use Formspree, create a free form and paste its URL here.</span>
+      </label>
+    </section>
+
+    <!-- ---------- SETTINGS ---------- -->
+    <section class="panel" data-panel="settings">
+      <h2 class="panel-title">Publishing</h2>
+      <p class="panel-hint">Where changes get published to.</p>
+
+      <div class="grid-2">
+        <label class="field">
+          <span class="field-label">GitHub username</span>
+          <input type="text" id="gh-owner" placeholder="nomadlab2026" />
+        </label>
+        <label class="field">
+          <span class="field-label">Repository name</span>
+          <input type="text" id="gh-repo" placeholder="ariamuse-site" />
+        </label>
+      </div>
+
+      <div class="grid-2">
+        <label class="field">
+          <span class="field-label">Branch</span>
+          <input type="text" id="gh-branch" placeholder="main" />
+        </label>
+        <label class="field">
+          <span class="field-label">Personal access token</span>
+          <input type="password" id="gh-token" placeholder="github_pat_..." autocomplete="off" />
+          <span class="field-hint">Stored in this browser only. Never shared.</span>
+        </label>
+      </div>
+
+      <div class="row-actions">
+        <button class="btn btn--ghost btn--sm" id="test-token-btn">Test connection</button>
+        <button class="btn btn--ghost btn--sm" id="logout-token-btn">Forget token</button>
+        <button class="btn btn--ghost btn--sm" id="change-passcode-btn">Change passcode</button>
+      </div>
+
+      <div class="status-box" id="conn-status" hidden></div>
+
+      <h2 class="panel-title panel-title--spaced">How publishing works</h2>
+      <ol class="howto">
+        <li>Make your changes in these forms.</li>
+        <li>Press <strong>Save &amp; Publish</strong> (top right).</li>
+        <li>Your site updates automatically within about a minute — no upload needed.</li>
+      </ol>
+      <p class="muted">Photos you drop are uploaded to the repository automatically, so you never need to open GitHub yourself.</p>
+    </section>
+
+  </main>
+
+  <footer class="admin-foot">
+    <span id="foot-repo">—</span>
+    <a href="../" target="_blank" rel="noopener">View live site ↗</a>
+  </footer>
+</div>
+
+<!-- ================= TOAST ================= -->
+<div class="toast" id="toast" hidden></div>
+
+<!-- ================= PASSCODE MODAL ================= -->
+<div class="modal" id="passcode-modal" hidden>
+  <div class="modal-card">
+    <h3 class="modal-title">Change passcode</h3>
+    <p class="muted">This changes the code needed to open this admin panel. You'll need your GitHub token to save it.</p>
+    <label class="field">
+      <span class="field-label">New passcode</span>
+      <input type="text" id="new-passcode" placeholder="At least 6 characters" />
+    </label>
+    <label class="field">
+      <span class="field-label">Confirm passcode</span>
+      <input type="text" id="confirm-passcode" placeholder="Type it again" />
+    </label>
+    <div class="modal-actions">
+      <button class="btn btn--ghost btn--sm" id="cancel-passcode">Cancel</button>
+      <button class="btn btn--solid btn--sm" id="save-passcode">Save passcode</button>
+    </div>
+  </div>
+</div>
+
+<script src="admin.js"></script>
+</body>
+</html>
