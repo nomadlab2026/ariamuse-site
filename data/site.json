@@ -24,9 +24,7 @@
   "about": {
     "eyebrow": "The Artist",
     "title": "Between Couture and Code",
-    "body": [
-      "Aria Muse operates at the intersection of high fashion and emerging technology. Every frame is art-directed, every release is produced independently, and every image exists to make the digital world feel a little more tactile."
-    ],
+    "body": "Aria Muse operates at the intersection of high fashion and emerging technology. Every frame is art-directed, every release is produced independently, and every image exists to make the digital world feel a little more tactile.",
     "stats": [
       {
         "label": "Releases",
@@ -255,9 +253,9 @@
     "eyebrow": "Contact",
     "title": "Collaborate With Aria",
     "blurb": "For bookings, press enquiries, brand partnerships or licensing, reach out below.",
-    "email": "hello@ariamuse.com",
-    "bookingEmail": "bookings@ariamuse.com",
-    "pressEmail": "press@ariamuse.com",
+    "email": "hello@nomadlab.one",
+    "bookingEmail": "bookings@nomadlab.one",
+    "pressEmail": "press@nomadlab.one",
     "formEnabled": true,
     "formNote": "Replies within 48 hours.",
     "socialNote": "DMs are open — say hello."
