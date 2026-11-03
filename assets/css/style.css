@@ -435,6 +435,15 @@ ul, ol { list-style: none; }
 .btn--dark::before { background: var(--ink); }
 .btn--dark:hover { color: var(--paper); }
 
+/* Gold accent button — used for the primary subscribe call to action. */
+.btn--gold {
+  border-color: var(--accent);
+  color: var(--accent);
+}
+
+.btn--gold::before { background: var(--accent); }
+.btn--gold:hover { color: var(--ink); border-color: var(--accent); }
+
 .btn .arrow { transition: transform 0.45s var(--ease-out); }
 .btn:hover .arrow { transform: translateX(5px); }
 
@@ -850,6 +859,13 @@ ul, ol { list-style: none; }
 /* --- Media links --------------------------------------------------------- */
 .media { background: var(--ink-soft); }
 
+.media-blurb {
+  margin: -1.5rem 0 2.5rem;
+  max-width: 56ch;
+  color: rgba(244, 241, 236, 0.62);
+  font-size: 1rem;
+}
+
 .media-grid {
   display: grid;
   grid-template-columns: repeat(3, 1fr);
@@ -857,6 +873,67 @@ ul, ol { list-style: none; }
   background: var(--line);
   border: 1px solid var(--line);
 }
+
+/* Featured platform — the primary destination, given a full-width card.
+   Layout details live further down, after the base .media-card rule. */
+.media-card--featured {
+  grid-column: 1 / -1;
+  border-bottom: 1px solid var(--line);
+  position: relative;
+  overflow: hidden;
+}
+
+.media-card--featured::before {
+  content: "";
+  position: absolute;
+  left: 0;
+  top: 0;
+  bottom: 0;
+  width: 2px;
+  background: var(--accent);
+}
+
+.media-card--featured .media-icon {
+  width: 46px;
+  height: 46px;
+  flex: 0 0 auto;
+  color: var(--accent);
+}
+
+.media-featured-body {
+  display: grid;
+  gap: 0.35rem;
+  justify-items: start;
+  text-align: left;
+  flex: 1 1 260px;
+  min-width: 0;
+}
+
+.media-featured-badge {
+  justify-self: start;
+  padding: 0.3rem 0.7rem;
+  border: 1px solid rgba(200, 169, 126, 0.45);
+  border-radius: 999px;
+  font-size: 0.5625rem;
+  font-weight: 500;
+  letter-spacing: 0.24em;
+  text-transform: uppercase;
+  color: var(--accent);
+}
+
+.media-note {
+  font-size: 0.875rem;
+  color: rgba(244, 241, 236, 0.55);
+}
+
+.media-arrow {
+  font-size: 1.5rem;
+  color: var(--accent);
+  flex: 0 0 auto;
+  transition: transform 0.5s var(--ease-out);
+}
+
+.media-card--featured:hover .media-arrow { transform: translateX(6px); }
 
 .media-card {
   position: relative;
@@ -882,6 +959,28 @@ ul, ol { list-style: none; }
 .media-card:hover { background: #1d1d22; }
 .media-card:hover::after { transform: translate(4px, -4px); color: var(--accent); }
 
+/* The featured card keeps a horizontal layout, so it must come after the
+   base .media-card rule that sets a vertical stack. */
+.media-card.media-card--featured {
+  flex-direction: row;
+  flex-wrap: wrap;
+  align-items: center;
+  justify-content: flex-start;
+  gap: clamp(1rem, 2.5vw, 2rem);
+  padding: clamp(1.75rem, 3.5vw, 3rem);
+  background:
+    linear-gradient(120deg, rgba(200, 169, 126, 0.13), rgba(200, 169, 126, 0.02) 58%),
+    var(--ink-soft);
+}
+
+.media-card.media-card--featured:hover {
+  background:
+    linear-gradient(120deg, rgba(200, 169, 126, 0.2), rgba(200, 169, 126, 0.04) 58%),
+    var(--ink-soft);
+}
+
+.media-card.media-card--featured::after { content: none; }
+
 .media-icon {
   width: 34px;
   height: 34px;
@@ -895,6 +994,12 @@ ul, ol { list-style: none; }
 .media-label {
   font-family: var(--font-display);
   font-size: clamp(1.375rem, 2.4vw, 1.875rem);
+}
+
+/* Larger type for the featured platform card. */
+.media-label--lg {
+  font-size: clamp(1.75rem, 3.5vw, 2.75rem);
+  line-height: 1.05;
 }
 
 .media-handle {
