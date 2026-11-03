@@ -406,10 +406,21 @@
       var row = el("div", "rep-row");
       var fields = el("div", "rep-fields");
 
+      // Consecutive "inline" fields share one grid row so a compact
+      // spec (name + handle + url) stays on a single line.
+      var inlineRow = null;
+      var flushInline = function () {
+        if (inlineRow) {
+          fields.appendChild(inlineRow);
+          inlineRow = null;
+        }
+      };
+
       spec.fields.forEach(function (f) {
         var wrap = el("label", "field");
 
         if (f.type === "checkbox") {
+          flushInline();
           wrap.className = "field field--inline";
           var box = el("input");
           box.type = "checkbox";
@@ -434,6 +445,7 @@
         wrap.appendChild(el("span", "field-label", f.label));
 
         if (f.type === "textarea") {
+          flushInline();
           var ta = el("textarea");
           ta.rows = f.rows || 2;
           ta.value = entry[f.key] === undefined ? "" : entry[f.key];
@@ -455,6 +467,11 @@
             onChange();
           });
           wrap.appendChild(sel);
+          if (f.inline) {
+            if (!inlineRow) inlineRow = el("div", "rep-inline");
+            inlineRow.appendChild(wrap);
+            return;
+          }
         } else {
           var input = el("input");
           input.type = "text";
@@ -467,13 +484,15 @@
         }
 
         if (f.type === "inline") {
-          var inline = el("div", "rep-inline");
-          inline.appendChild(wrap);
-          fields.appendChild(inline);
+          if (!inlineRow) inlineRow = el("div", "rep-inline");
+          inlineRow.appendChild(wrap);
         } else {
+          flushInline();
           fields.appendChild(wrap);
         }
       });
+
+      flushInline();
 
       if (spec.thumb) {
         var img = el("img", "rep-thumb");
@@ -559,6 +578,7 @@
         key: "icon",
         label: "Icon",
         type: "select",
+        inline: true,
         options: ["fanvue", "instagram", "tiktok", "youtube", "x", "spotify", "sparkle", "link"]
       },
       { key: "note", label: "Description (featured card only)", type: "textarea", rows: 2 },
