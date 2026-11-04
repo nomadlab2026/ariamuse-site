@@ -605,6 +605,17 @@
     var form = $("contact-form");
     if (!form) return;
 
+    // Lock the submit button until every required field is valid, so blank
+    // submissions can never reach the (metered) Formspree endpoint.
+    var sendBtn = form.querySelector('button[type="submit"]');
+    function syncButtonState() {
+      if (sendBtn) sendBtn.disabled = !form.checkValidity();
+    }
+    form.addEventListener("input", syncButtonState);
+    form.addEventListener("change", syncButtonState);
+    form.addEventListener("blur", syncButtonState, true);
+    syncButtonState();
+
     form.addEventListener("submit", function (e) {
       e.preventDefault();
 
@@ -628,6 +639,7 @@
             if (!res.ok) throw new Error("Request failed");
             status.textContent = "Thank you — your message is on its way.";
             form.reset();
+            syncButtonState();
           })
           .catch(function () {
             status.textContent = "Could not send. Please email us directly.";
