@@ -447,18 +447,14 @@
     var list = $("contact-list");
     if (list) {
       list.innerHTML = "";
-      var rows = [];
-      if (contact.email) rows.push({ label: "General", value: contact.email });
-      if (contact.bookingEmail) rows.push({ label: "Bookings", value: contact.bookingEmail });
-      if (contact.pressEmail) rows.push({ label: "Press", value: contact.pressEmail });
-
-      rows.forEach(function (row) {
+      // Single consolidated email address (all enquiries go to one inbox).
+      if (contact.email) {
         var a = el("a", "contact-row");
-        a.href = "mailto:" + row.value;
-        a.appendChild(el("span", "contact-row-label", row.label));
-        a.appendChild(el("span", "contact-row-value", row.value));
+        a.href = "mailto:" + contact.email;
+        a.appendChild(el("span", "contact-row-label", "Email"));
+        a.appendChild(el("span", "contact-row-value", contact.email));
         list.appendChild(a);
-      });
+      }
     }
 
     var form = $("contact-form");
@@ -644,7 +640,10 @@
       var body = payload.message + "\n\n—\n" + payload.name + "\n" + payload.email;
       window.location.href =
         "mailto:" + target + "?subject=" + encodeURIComponent(subject) + "&body=" + encodeURIComponent(body);
-      status.textContent = "Opening your email app…";
+      status.innerHTML =
+        "Opening your email app… If nothing happens, " +
+        '<a href="mailto:' + target + '?subject=' + encodeURIComponent(subject) +
+        '">click here to email ' + target + "</a>.";
     });
   }
 
