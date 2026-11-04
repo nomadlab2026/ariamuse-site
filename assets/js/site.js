@@ -39,6 +39,8 @@
       '<svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.4"><rect x="2.5" y="2.5" width="19" height="19" rx="5"/><circle cx="12" cy="12" r="4.2"/><circle cx="17.4" cy="6.6" r="1.1" fill="currentColor" stroke="none"/></svg>',
     tiktok:
       '<svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.4" stroke-linecap="round"><path d="M14.5 3v10.8a3.4 3.4 0 1 1-2.9-3.36"/><path d="M14.5 3c.4 2.3 2 3.9 4.4 4.1"/></svg>',
+    threads:
+      '<svg viewBox="0 0 24 24" fill="currentColor"><path d="M12.186 24h-.007c-3.581-.024-6.031-1.162-7.798-3.464-1.627-2.109-2.194-4.966-2.234-7.981l-.006-.494v-.247c0-2.981.651-5.803 2.305-7.892C5.417 1.855 8.151.837 12.013.837c3.632 0 6.311.817 8.234 2.937 1.945 2.131 2.637 4.925 2.637 7.932v.247l-.006.5c-.042 3.044-.612 5.917-2.244 8.028-1.766 2.287-4.207 3.428-7.771 3.455h-.007zm.006-18.407c-2.972 0-5.15.895-6.65 2.776-1.381 1.764-1.926 4.294-1.961 7.036l-.004.438v.247c0 2.704.527 5.058 1.79 6.797 1.296 1.789 3.236 2.785 6.013 2.808h.006c2.679-.024 4.538-.926 5.84-2.644 1.182-1.594 1.7-3.91 1.737-6.677l.004-.438v-.247c0-2.737-.555-5.136-1.873-6.891-1.293-1.729-3.262-2.71-6.002-2.734zm-3.31 13.04c.64.27 1.12.36 1.83.36.97 0 1.66-.25 2.19-.74.5-.46.79-1.13.83-1.99v-4.05h1.51v4.22c0 1.15.16 2.03.51 2.66.39.69 1.04 1.05 1.99 1.05.84 0 1.45-.24 2.01-.7.51-.42.84-1.02.93-1.74.13-1.06-.32-1.87-1.25-2.52-.37-.27-.5-.45-.5-.74 0-.2.11-.38.34-.51.41-.23.93-.17 1.41.14.73.47 1.06 1.25 1.13 2.28.04.59.24.96.6 1.15.3.15.64.22 1.02.22.55 0 .98-.19 1.34-.56.4-.4.61-1.02.61-1.85v-7.4h-1.51v7.05c0 .42-.06.73-.2.91-.16.21-.42.32-.78.32-.31 0-.56-.11-.76-.33-.24-.26-.36-.66-.36-1.21v-6.74h-1.51v6.88c0 .69-.13 1.21-.39 1.55-.28.36-.69.54-1.19.54-.42 0-.76-.13-1.03-.4-.23-.23-.37-.56-.42-1 1.76-2.06 2.64-3.93 2.64-5.57v-.54h-1.55l-2.23 6.12-2.22-6.12h-1.55v.54c0 1.64.88 3.51 2.64 5.57-.05.44-.19.77-.42 1-.27.27-.61.4-1.03.4-.5 0-.91-.18-1.19-.54-.26-.34-.39-.86-.39-1.55v-6.88h-1.51v6.74c0 .55-.12.95-.36 1.21-.2.22-.45.33-.76.33-.36 0-.62-.11-.78-.32-.14-.18-.2-.49-.2-.91v-7.05h-1.5v7.4c0 .83.21 1.45.61 1.85.36.37.79.56 1.34.56z"/></svg>',
     youtube:
       '<svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.4"><rect x="2" y="5" width="20" height="14" rx="4.5"/><path d="M10.2 9.3v5.4L15.3 12z" fill="currentColor" stroke="none"/></svg>',
     x:
@@ -56,6 +58,22 @@
   function iconFor(name) {
     var key = String(name || "link").toLowerCase().replace(/[^a-z]/g, "");
     return ICONS[key] || ICONS.link;
+  }
+
+  /** Build the media icon wrapper: an <img> when an iconImage is provided
+      (e.g. the official Fanvue logo), otherwise the inline SVG. */
+  function mediaIconEl(link) {
+    var wrap = el("div", "media-icon");
+    if (link && link.iconImage) {
+      var img = el("img");
+      img.src = imgSrc(link.iconImage);
+      img.alt = (link.label || "platform") + " logo";
+      img.loading = "lazy";
+      wrap.appendChild(img);
+    } else {
+      wrap.innerHTML = iconFor(link && link.icon ? link.icon : (link && link.label));
+    }
+    return wrap;
   }
 
   /* -------------------------------------------------------------- render */
@@ -401,8 +419,7 @@
       fa.target = "_blank";
       fa.rel = "noopener noreferrer";
 
-      var fIcon = el("div", "media-icon");
-      fIcon.innerHTML = iconFor(featured.icon || featured.label);
+      var fIcon = mediaIconEl(featured);
       fa.appendChild(fIcon);
 
       var fBody = el("div", "media-featured-body");
@@ -426,8 +443,7 @@
       a.target = "_blank";
       a.rel = "noopener noreferrer";
 
-      var iconWrap = el("div", "media-icon");
-      iconWrap.innerHTML = iconFor(l.icon || l.label);
+      var iconWrap = mediaIconEl(l);
       a.appendChild(iconWrap);
 
       a.appendChild(el("div", "media-label", l.label || ""));
