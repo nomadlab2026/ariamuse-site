@@ -1108,6 +1108,11 @@ ul, ol { list-style: none; }
   min-height: 1.25rem;
   color: var(--accent);
 }
+.form-status a {
+  color: var(--accent);
+  text-decoration: underline;
+  font-weight: 600;
+}
 
 /* --- Footer -------------------------------------------------------------- */
 .site-footer {
