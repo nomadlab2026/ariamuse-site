@@ -579,8 +579,9 @@
         label: "Icon",
         type: "select",
         inline: true,
-        options: ["fanvue", "instagram", "tiktok", "youtube", "x", "spotify", "sparkle", "link"]
+        options: ["fanvue", "instagram", "threads", "tiktok", "youtube", "x", "spotify", "sparkle", "link"]
       },
+      { key: "iconImage", label: "Icon image path (optional — overrides the icon with a custom logo, e.g. assets/photos/fanvue-logo.png)" },
       { key: "note", label: "Description (featured card only)", type: "textarea", rows: 2 },
       { key: "featured", label: "Feature as the main card (one only)", type: "checkbox" }
     ],
