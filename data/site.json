@@ -248,6 +248,7 @@
     "bookingEmail": "ariamuseai@outlook.com",
     "pressEmail": "ariamuseai@outlook.com",
     "formEnabled": true,
+    "formEndpoint": "https://formspree.io/f/xoeeyldq",
     "formNote": "Replies within 48 hours.",
     "socialNote": "DMs are open — say hello."
   }
