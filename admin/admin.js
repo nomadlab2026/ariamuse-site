@@ -901,7 +901,7 @@
     var cfg = ghConfig();
 
     // Prefer the repo copy (the freshest), fall back to the local file.
-    var localFetch = fetch("../data/site.json", { cache: "no-cache" }).then(function (res) {
+    var localFetch = fetch("../data/site.json?t=" + Date.now(), { cache: "no-store" }).then(function (res) {
       if (!res.ok) throw new Error("local missing");
       return res.json();
     });
@@ -961,7 +961,10 @@
 
     hash(input)
       .then(function (hashed) {
-        return fetch("../data/admin.json", { cache: "no-cache" })
+        // no-store plus a cache-busting query: GitHub Pages sits behind a
+        // CDN, and a stale admin.json would make a freshly changed
+        // passcode look wrong (or an old one look right).
+        return fetch("../data/admin.json?t=" + Date.now(), { cache: "no-store" })
           .then(function (res) {
             if (!res.ok) throw new Error("no-admin-file");
             return res.json();
