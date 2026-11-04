@@ -217,14 +217,21 @@
         "handle": "ariamuse",
         "url": "https://www.fanvue.com/ariamuse",
         "icon": "fanvue",
+        "iconImage": "assets/photos/fanvue-logo.png",
         "featured": true,
         "note": "Exclusive content & early releases"
       },
       {
         "label": "Instagram",
-        "handle": "@ariamuse_ai",
-        "url": "https://www.instagram.com/ariamuse_ai",
+        "handle": "@ariamusex",
+        "url": "https://www.instagram.com/ariamusex",
         "icon": "instagram"
+      },
+      {
+        "label": "Threads",
+        "handle": "@ariamusex",
+        "url": "https://www.threads.com/@ariamusex",
+        "icon": "threads"
       },
       {
         "label": "TikTok",
