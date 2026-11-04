@@ -69,7 +69,25 @@ CNAME                   绑定域名 nomadlab.one
 ## 三、后台密码和 GitHub Token
 
 ### 后台密码
-默认 `ariamuse2026`。可在 **Settings → Change passcode** 修改。
+默认 `ariamuse2026`。有两种改法：
+
+**方法 A — 后台内改（记得密码时用，最方便）**
+1. 登录后台 → **Settings** 标签页
+2. 填好 Personal access token
+3. 点 **Change passcode**
+4. 输入新密码两次 → 保存
+5. 约 1-2 分钟后新密码生效
+
+**方法 B — 忘了密码时用（不需要旧密码）**
+在项目目录执行：
+```bash
+python tools/reset_passcode.py <你的GitHub token> <新密码>
+```
+脚本直接改写仓库里的 `data/admin.json`（存的是 SHA-256 哈希，明文不落盘），
+推送后自动部署生效。
+
+> ⚠️ 改完密码后，已经登录过的浏览器仍保留本地会话，直到点 **Lock** 或清除缓存。
+> 想立刻踢掉所有设备，就改密码后让别人手动退出。
 
 ### GitHub Token（后台保存内容用）
 后台需要一次 GitHub 授权才能把修改写回仓库。创建方法：
