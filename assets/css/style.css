@@ -1113,6 +1113,23 @@ ul, ol { list-style: none; }
   text-decoration: underline;
   font-weight: 600;
 }
+.req {
+  color: var(--accent);
+  margin-left: 0.18em;
+  font-weight: 600;
+}
+/* Submit button is locked until all required fields are filled */
+.btn[disabled],
+.btn[disabled]:hover {
+  opacity: 0.35;
+  cursor: not-allowed;
+  color: var(--accent);
+  border-color: var(--accent);
+}
+.btn[disabled]::before,
+.btn[disabled]:hover::before {
+  transform: translateY(101%);
+}
 
 /* --- Footer -------------------------------------------------------------- */
 .site-footer {
