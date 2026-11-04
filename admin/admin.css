@@ -98,24 +98,6 @@ img { display: block; max-width: 100%; }
   font-size: 0.8125rem;
 }
 
-.gate-help { margin-top: 1.75rem; font-size: 0.8125rem; }
-
-.gate-help summary {
-  cursor: pointer;
-  color: var(--muted);
-  list-style: none;
-  padding: 0.5rem 0;
-  border-top: 1px solid var(--line);
-}
-
-.gate-help summary::-webkit-details-marker { display: none; }
-.gate-help summary::before { content: "+ "; color: var(--accent); font-weight: 700; }
-.gate-help[open] summary::before { content: "− "; }
-
-.gate-help-body { padding-top: 0.75rem; color: var(--muted); }
-.gate-help-body ol { margin: 0.5rem 0 0.75rem 1.1rem; list-style: decimal; }
-.gate-help-body li { margin-bottom: 0.4rem; }
-
 /* ---------------------------------------------------------------- app */
 .app { min-height: 100vh; display: flex; flex-direction: column; }
 
