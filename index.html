@@ -216,20 +216,20 @@
         <form class="form reveal" id="contact-form">
           <div class="form-row">
             <div class="field">
-              <label for="cf-name">Your Name</label>
+              <label for="cf-name">Your Name <span class="req" aria-hidden="true">*</span></label>
               <input id="cf-name" name="name" type="text" placeholder="Jane Doe" required />
             </div>
             <div class="field">
-              <label for="cf-email">Email</label>
+              <label for="cf-email">Email <span class="req" aria-hidden="true">*</span></label>
               <input id="cf-email" name="email" type="email" placeholder="jane@studio.com" required />
             </div>
           </div>
           <div class="field">
-            <label for="cf-subject">Subject</label>
-            <input id="cf-subject" name="subject" type="text" placeholder="Booking request" />
+            <label for="cf-subject">Subject <span class="req" aria-hidden="true">*</span></label>
+            <input id="cf-subject" name="subject" type="text" placeholder="Booking request" required />
           </div>
           <div class="field">
-            <label for="cf-message">Message</label>
+            <label for="cf-message">Message <span class="req" aria-hidden="true">*</span></label>
             <textarea id="cf-message" name="message" placeholder="Tell us about the project…" required></textarea>
           </div>
           <div>
