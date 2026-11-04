@@ -669,7 +669,7 @@
     initLightbox();
     initContactForm();
 
-    fetch(DATA_URL, { cache: "no-cache" })
+    fetch(DATA_URL + "?t=" + Date.now(), { cache: "no-store" })
       .then(function (res) {
         if (!res.ok) throw new Error("HTTP " + res.status);
         return res.json();
