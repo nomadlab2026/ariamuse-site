@@ -19,12 +19,48 @@
 
     <div id="gate-error" class="gate-error" hidden></div>
 
-    <label class="field">
-      <span class="field-label">Access passcode</span>
-      <input type="password" id="passcode" placeholder="Enter your passcode" autocomplete="current-password" />
-    </label>
+    <!-- 状态 1：还没设过密码 → 直接引导设置（不再死锁） -->
+    <div id="gate-setup" hidden>
+      <p class="gate-hint">This browser has no passcode yet. Set one now to protect the panel.</p>
+      <label class="field">
+        <span class="field-label">New passcode</span>
+        <input type="password" id="setup-passcode" placeholder="Choose a passcode" autocomplete="new-password" />
+      </label>
+      <label class="field">
+        <span class="field-label">Confirm passcode</span>
+        <input type="password" id="setup-passcode-2" placeholder="Repeat it" autocomplete="new-password" />
+      </label>
+      <button class="btn btn--solid" id="setup-btn">Set passcode &amp; enter</button>
+    </div>
 
-    <button class="btn btn--solid" id="unlock-btn">Unlock</button>
+    <!-- 状态 2：已设过密码 → 解锁 -->
+    <div id="gate-unlock" hidden>
+      <label class="field">
+        <span class="field-label">Access passcode</span>
+        <input type="password" id="passcode" placeholder="Enter your passcode" autocomplete="current-password" />
+      </label>
+
+      <button class="btn btn--solid" id="unlock-btn">Unlock</button>
+      <p class="gate-alt">
+        <button type="button" class="linklike" id="forgot-btn">Forgot the passcode?</button>
+      </p>
+    </div>
+
+    <!-- 状态 3：忘记密码 → 用 GitHub Token 验证后重置 -->
+    <div id="gate-reset" hidden>
+      <p class="gate-hint">
+        The passcode only lives in this browser, so it cannot be recovered.
+        Paste your GitHub token to prove you own the site and reset it.
+      </p>
+      <label class="field">
+        <span class="field-label">GitHub Personal Access Token</span>
+        <input type="password" id="reset-token" placeholder="ghp_…" autocomplete="off" />
+      </label>
+      <button class="btn btn--solid" id="reset-btn">Verify &amp; reset</button>
+      <p class="gate-alt">
+        <button type="button" class="linklike" id="reset-back">Back</button>
+      </p>
+    </div>
   </div>
 </div>
 
