@@ -1070,14 +1070,26 @@
     }
 
     /* ---- state 3: forgotten passcode — reset it with a GitHub token ----
-       The token is only used to read the repository and confirm the caller
-       owns it; it is never written to disk by this flow.               */
+       The token proves the caller owns the repository; it is used for the API
+       call only and is never written to disk by this flow.               */
     function resetPasscode() {
       var token = ($("reset-token").value || "").trim();
+      var a = $("reset-passcode").value;
+      var b = $("reset-passcode-2").value;
+
       if (!token) {
         showError("Paste your GitHub token to continue.");
         return;
       }
+      if (!a) {
+        showError("Choose a new passcode.");
+        return;
+      }
+      if (a !== b) {
+        showError("The two passcodes do not match.");
+        return;
+      }
+
       var cfg = {
         owner: (getSetting(CONFIG.ownerKey, DEFAULTS.owner) || DEFAULTS.owner).trim(),
         repo: (getSetting(CONFIG.repoKey, DEFAULTS.repo) || DEFAULTS.repo).trim(),
@@ -1086,32 +1098,47 @@
       };
       var btn = $("reset-btn");
       btn.disabled = true;
-      btn.textContent = "Verifying…";
-      fetch(CONFIG.api + "/repos/" + cfg.owner + "/" + cfg.repo, {
-        headers: ghHeaders(token)
-      })
-        .then(function (res) {
-          if (!res.ok) {
-            return res.json().then(function (body) {
-              throw new Error(body.message || "HTTP " + res.status);
+      btn.textContent = "Resetting…";
+
+      hash(a)
+        .then(function (hashed) {
+          return fetch(CONFIG.api + "/repos/" + cfg.owner + "/" + cfg.repo, {
+            headers: ghHeaders(token)
+          }).then(function (res) {
+            if (!res.ok) {
+              return res.json().then(function (body) {
+                throw new Error(body.message || "HTTP " + res.status);
+              });
+            }
+            return res.json();
+          }).then(function () {
+            // Token is valid for the repository — write the new hash to the
+            // shared file so both panels and every device accept it.
+            return toBase64(JSON.stringify({ passcode: hashed }, null, 2)).then(function (encoded) {
+              return ghGetFile(cfg, CONFIG.authPath).then(function (existing) {
+                return ghPutFile(cfg, CONFIG.authPath, encoded, "Reset the shared admin passcode", existing ? existing.sha : null);
+              });
+            }).then(function () {
+              return hashed;
             });
-          }
-          return res.json();
+          });
         })
-        .then(function () {
-          // Token is valid for the repository — clear the stale passcode so
-          // the next screen asks the user to set a new one.
-          setSetting(CONFIG.passcodeKey, "");
+        .then(function (hashed) {
+          setSetting(CONFIG.passcodeKey, hashed);
+          remotePasscode = hashed;
           $("reset-token").value = "";
-          showMode("setup");
-          showError("Token verified. Set a new passcode below.");
+          $("reset-passcode").value = "";
+          $("reset-passcode-2").value = "";
+          showMode("unlock");
+          showError("Passcode reset. Enter the new passcode below.");
+          $("passcode").value = a;
         })
         .catch(function (err) {
-          showError("Could not verify the token: " + (err.message || "unknown error"));
+          showError("Could not reset the passcode: " + (err.message || "unknown error"));
         })
         .then(function () {
           btn.disabled = false;
-          btn.textContent = "Verify & reset";
+          btn.textContent = "Reset passcode";
         });
     }
 
