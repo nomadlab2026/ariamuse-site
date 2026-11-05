@@ -19,55 +19,17 @@
 
     <div id="gate-error" class="gate-error" hidden></div>
 
-    <!-- 状态 1：还没设过密码 → 直接引导设置（不再死锁） -->
-    <div id="gate-setup" hidden>
-      <p class="gate-hint">This browser has no passcode yet. Set one now to protect the panel.</p>
-      <label class="field">
-        <span class="field-label">New passcode</span>
-        <input type="password" id="setup-passcode" placeholder="Choose a passcode" autocomplete="new-password" />
-      </label>
-      <label class="field">
-        <span class="field-label">Confirm passcode</span>
-        <input type="password" id="setup-passcode-2" placeholder="Repeat it" autocomplete="new-password" />
-      </label>
-      <button class="btn btn--solid" id="setup-btn">Set passcode &amp; enter</button>
-    </div>
-
-    <!-- 状态 2：已设过密码 → 解锁 -->
-    <div id="gate-unlock" hidden>
+    <!-- 只有一道门：口令。
+         这里刻意不提供「忘记密码 / 重设口令」的入口，也不提供在浏览器里
+         新建口令的入口 —— 任何拿到这个链接的人都无法改写后台口令。
+         忘记口令时用仓库内的命令行脚本恢复（见 README）。 -->
+    <div id="gate-unlock">
       <label class="field">
         <span class="field-label">Access passcode</span>
         <input type="password" id="passcode" placeholder="Enter your passcode" autocomplete="current-password" />
       </label>
 
       <button class="btn btn--solid" id="unlock-btn">Unlock</button>
-      <p class="gate-alt">
-        <button type="button" class="linklike" id="forgot-btn">Forgot the passcode?</button>
-      </p>
-    </div>
-
-    <!-- 状态 3：忘记密码 → 用 GitHub Token 验证后重设 -->
-    <div id="gate-reset" hidden>
-      <p class="gate-hint">
-        The passcode is stored as a hash, so it cannot be read back. Paste your
-        GitHub token to prove you own the site, then set a new passcode.
-      </p>
-      <label class="field">
-        <span class="field-label">GitHub Personal Access Token</span>
-        <input type="password" id="reset-token" placeholder="ghp_…" autocomplete="off" />
-      </label>
-      <label class="field">
-        <span class="field-label">New passcode</span>
-        <input type="password" id="reset-passcode" placeholder="Choose a new passcode" autocomplete="new-password" />
-      </label>
-      <label class="field">
-        <span class="field-label">Confirm new passcode</span>
-        <input type="password" id="reset-passcode-2" placeholder="Repeat it" autocomplete="new-password" />
-      </label>
-      <button class="btn btn--solid" id="reset-btn">Reset passcode</button>
-      <p class="gate-alt">
-        <button type="button" class="linklike" id="reset-back">Back</button>
-      </p>
     </div>
   </div>
 </div>
@@ -265,8 +227,10 @@
 
       <h3 class="sub-title">Access passcode</h3>
       <p class="panel-hint">
-        The passcode is stored only in this browser (as a SHA-256 hash), so it
-        protects the panel on this device. Set it the first time you use the panel.
+        The passcode is shared with the Studio Admin and works on every device.
+        Saving a new one needs your GitHub token so it can be written to the
+        shared file. There is no reset link on the lock screen — if you ever
+        lose the passcode, use <code>tools/reset_passcode.py</code> locally.
       </p>
 
       <div class="grid-2">
@@ -281,7 +245,7 @@
       </div>
       <div class="row-actions">
         <button class="btn btn--ghost btn--sm" id="set-passcode" type="button">Save passcode</button>
-        <button class="btn btn--ghost btn--sm" id="clear-passcode" type="button">Remove passcode</button>
+        <button class="btn btn--ghost btn--sm" id="clear-passcode" type="button">Remove local copy</button>
       </div>
 
       <h3 class="sub-title">How publishing works</h3>
