@@ -957,20 +957,34 @@
   function unlock() {
     var input = $("passcode").value.trim();
     var error = $("gate-error");
+    var btn = $("unlock-btn");
 
     if (!input) {
       error.hidden = false;
       error.textContent = "Please enter your passcode.";
       return;
     }
+    if (btn.disabled) return;
+
+    // A cold GitHub Pages cache can stall for tens of seconds. Show
+    // progress and bound the wait so the button never sticks.
+    btn.disabled = true;
+    btn.textContent = "Verifying…";
+
+    // no-store plus a cache-busting query: GitHub Pages sits behind a
+    // CDN, and a stale admin.json would make a freshly changed
+    // passcode look wrong (or an old one look right).
+    var ctrl = typeof AbortController !== "undefined" ? new AbortController() : null;
+    var timer = ctrl ? setTimeout(function () { ctrl.abort(); }, 20000) : null;
 
     hash(input)
       .then(function (hashed) {
-        // no-store plus a cache-busting query: GitHub Pages sits behind a
-        // CDN, and a stale admin.json would make a freshly changed
-        // passcode look wrong (or an old one look right).
-        return fetch("../data/admin.json?t=" + Date.now(), { cache: "no-store" })
+        return fetch("../data/admin.json?t=" + Date.now(), {
+          cache: "no-store",
+          signal: ctrl ? ctrl.signal : undefined
+        })
           .then(function (res) {
+            if (timer) clearTimeout(timer);
             if (!res.ok) throw new Error("no-admin-file");
             return res.json();
           })
@@ -1012,6 +1026,10 @@
           err.message === "wrong-passcode"
             ? "That passcode isn't right. Try again."
             : "Could not verify the passcode. Check your connection and try again.";
+      })
+      .then(function () {
+        btn.disabled = false;
+        btn.textContent = "Unlock Studio";
       });
   }
 
