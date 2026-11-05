@@ -954,6 +954,29 @@
   }
 
   /* ---------------------------------------------------------------- boot */
+  /**
+   * Read the shared passcode file.
+   *
+   * GitHub Pages sits behind a CDN, and a cache-busting query string
+   * ("?t=" + Date.now()) makes every single request miss the cache and
+   * go all the way back to the origin — measured at 28-30 seconds on a
+   * cold cache. That is far too slow for a login form.
+   *
+   * So: try the plain URL first (served from the edge in ~300 ms, and
+   * the edge revalidates on its own schedule), and only if that fails
+   * do we bust the cache with one retry. The retry keeps correctness
+   * for the case where the passcode was just changed and the edge is
+   * still serving the old copy.
+   */
+  function fetchAdminFile(bust) {
+    var url = "../data/admin.json" + (bust ? "?t=" + Date.now() : "");
+    return fetch(url, { cache: bust ? "no-store" : "no-cache" })
+      .then(function (res) {
+        if (!res.ok) throw new Error("no-admin-file");
+        return res.json();
+      });
+  }
+
   function unlock() {
     var input = $("passcode").value.trim();
     var error = $("gate-error");
@@ -966,33 +989,30 @@
     }
     if (btn.disabled) return;
 
-    // A cold GitHub Pages cache can stall for tens of seconds. Show
-    // progress and bound the wait so the button never sticks.
+    // Show progress so a slow network never reads as a broken button.
     btn.disabled = true;
     btn.textContent = "Verifying…";
 
-    // no-store plus a cache-busting query: GitHub Pages sits behind a
-    // CDN, and a stale admin.json would make a freshly changed
-    // passcode look wrong (or an old one look right).
-    var ctrl = typeof AbortController !== "undefined" ? new AbortController() : null;
-    var timer = ctrl ? setTimeout(function () { ctrl.abort(); }, 20000) : null;
-
     hash(input)
       .then(function (hashed) {
-        return fetch("../data/admin.json?t=" + Date.now(), {
-          cache: "no-store",
-          signal: ctrl ? ctrl.signal : undefined
-        })
-          .then(function (res) {
-            if (timer) clearTimeout(timer);
-            if (!res.ok) throw new Error("no-admin-file");
-            return res.json();
-          })
+        return fetchAdminFile(false)
           .then(function (cfgFile) {
-            if (cfgFile.passcode && cfgFile.passcode !== hashed) {
-              throw new Error("wrong-passcode");
-            }
-            return true;
+            if (!cfgFile.passcode) throw new Error("wrong-passcode");
+            if (cfgFile.passcode === hashed) return true;
+            // The edge may still be serving the previous hash right after
+            // a passcode change. Confirm against a cache-busted copy
+            // before telling the user their passcode is wrong.
+            return fetchAdminFile(true)
+              .then(function (fresh) {
+                if (fresh.passcode !== hashed) throw new Error("wrong-passcode");
+                return true;
+              })
+              .catch(function (err) {
+                // A failed refresh is a network problem, not a wrong
+                // passcode — let it fall through to the offline fallback.
+                if (err.message === "wrong-passcode") throw err;
+                throw new Error("unreachable");
+              });
           })
           .catch(function (err) {
             if (err.message === "wrong-passcode") throw err;
