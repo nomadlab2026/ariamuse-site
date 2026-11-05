@@ -979,10 +979,6 @@
          reset  — passcode forgotten   → prove ownership with a GitHub token
        ------------------------------------------------------------------ */
 
-    function currentMode() {
-      return getSetting(CONFIG.passcodeKey, "") ? "unlock" : "setup";
-    }
-
     function showMode(mode) {
       $("gate-setup").hidden = mode !== "setup";
       $("gate-unlock").hidden = mode !== "unlock";
@@ -1133,7 +1129,9 @@
       showMode("reset");
     });
     $("reset-back").addEventListener("click", function () {
-      showMode(currentMode());
+      // Always go back to the unlock screen — the point of the reset
+      // panel is to recover an existing passcode, not to create one.
+      showMode("unlock");
     });
     $("reset-btn").addEventListener("click", resetPasscode);
 
@@ -1141,7 +1139,7 @@
       $("gate").hidden = false;
       $("app").hidden = true;
       $("passcode").value = "";
-      showMode(currentMode());
+      showMode("unlock");
     });
 
     // Decide which screen to show. If a passcode already exists on the
