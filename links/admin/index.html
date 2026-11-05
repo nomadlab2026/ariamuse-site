@@ -46,17 +46,25 @@
       </p>
     </div>
 
-    <!-- 状态 3：忘记密码 → 用 GitHub Token 验证后重置 -->
+    <!-- 状态 3：忘记密码 → 用 GitHub Token 验证后重设 -->
     <div id="gate-reset" hidden>
       <p class="gate-hint">
-        The passcode only lives in this browser, so it cannot be recovered.
-        Paste your GitHub token to prove you own the site and reset it.
+        The passcode is stored as a hash, so it cannot be read back. Paste your
+        GitHub token to prove you own the site, then set a new passcode.
       </p>
       <label class="field">
         <span class="field-label">GitHub Personal Access Token</span>
         <input type="password" id="reset-token" placeholder="ghp_…" autocomplete="off" />
       </label>
-      <button class="btn btn--solid" id="reset-btn">Verify &amp; reset</button>
+      <label class="field">
+        <span class="field-label">New passcode</span>
+        <input type="password" id="reset-passcode" placeholder="Choose a new passcode" autocomplete="new-password" />
+      </label>
+      <label class="field">
+        <span class="field-label">Confirm new passcode</span>
+        <input type="password" id="reset-passcode-2" placeholder="Repeat it" autocomplete="new-password" />
+      </label>
+      <button class="btn btn--solid" id="reset-btn">Reset passcode</button>
       <p class="gate-alt">
         <button type="button" class="linklike" id="reset-back">Back</button>
       </p>
