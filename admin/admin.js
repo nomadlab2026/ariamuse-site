@@ -840,10 +840,12 @@
     });
 
     $("logout-btn").addEventListener("click", function () {
-      setSetting(CONFIG.passcodeKey, "");
+      // Only lock the panel — the local copy of the passcode stays put so
+      // the panel can still be opened if the shared file is unreachable.
       $("app").hidden = true;
       $("gate").style.display = "";
       $("passcode").value = "";
+      $("passcode").focus();
     });
 
     $("change-passcode-btn").addEventListener("click", function () {
@@ -884,11 +886,13 @@
             return ghGetFile(cfg, "data/admin.json").then(function (existing) {
               return ghPutFile(cfg, "data/admin.json", encoded, "Update admin passcode", existing ? existing.sha : null);
             });
+          }).then(function () {
+            return hashed;
           });
         })
-        .then(function () {
+        .then(function (hashed) {
           $("passcode-modal").hidden = true;
-          setSetting(CONFIG.passcodeKey, next);
+          setSetting(CONFIG.passcodeKey, hashed);
           toast("Passcode changed.", "ok");
         })
         .catch(function (err) {
@@ -978,14 +982,21 @@
           })
           .catch(function (err) {
             if (err.message === "wrong-passcode") throw err;
-            // No admin.json reachable — accept the locally stored passcode.
+            // The shared file could not be read. Fall back to the copy kept
+            // in this browser — but only if there IS one. Falling through
+            // with an empty local copy would let anyone in.
             var stored = getSetting(CONFIG.passcodeKey, "");
-            if (stored && stored !== input) throw new Error("wrong-passcode");
+            if (!stored) throw new Error("wrong-passcode");
+            // Older builds stored the plain passcode; newer ones the hash.
+            if (stored !== hashed && stored !== input) throw new Error("wrong-passcode");
             return true;
+          })
+          .then(function () {
+            return hashed;
           });
       })
-      .then(function () {
-        setSetting(CONFIG.passcodeKey, input);
+      .then(function (hashed) {
+        setSetting(CONFIG.passcodeKey, hashed);
         error.hidden = true;
         $("gate").style.display = "none";
         $("app").hidden = false;
@@ -1004,99 +1015,11 @@
       });
   }
 
-  /**
-   * Forgotten passcode: verify the GitHub token against the repository, then
-   * write a fresh passcode hash to data/admin.json. The token is used for the
-   * API call only and is not stored.
-   */
-  function resetPasscode() {
-    var error = $("gate-error");
-    var token = ($("reset-token").value || "").trim();
-    var a = $("reset-passcode").value;
-    var b = $("reset-passcode-2").value;
-
-    if (!token) {
-      error.hidden = false;
-      error.textContent = "Paste your GitHub token to continue.";
-      return;
-    }
-    if (!a) {
-      error.hidden = false;
-      error.textContent = "Choose a new passcode.";
-      return;
-    }
-    if (a !== b) {
-      error.hidden = false;
-      error.textContent = "The two passcodes do not match.";
-      return;
-    }
-
-    var cfg = ghConfig();
-    cfg.token = token;
-    var btn = $("reset-btn");
-    btn.disabled = true;
-    btn.textContent = "Resetting…";
-
-    hash(a)
-      .then(function (hashed) {
-        return fetch(CONFIG.api + "/repos/" + cfg.owner + "/" + cfg.repo, {
-          headers: ghHeaders(token)
-        }).then(function (res) {
-          if (!res.ok) {
-            return res.json().then(function (body) {
-              throw new Error(body.message || "HTTP " + res.status);
-            });
-          }
-          return res.json();
-        }).then(function () {
-          return toBase64(JSON.stringify({ passcode: hashed }, null, 2)).then(function (encoded) {
-            return ghGetFile(cfg, "data/admin.json").then(function (existing) {
-              return ghPutFile(cfg, "data/admin.json", encoded, "Reset admin passcode", existing ? existing.sha : null);
-            });
-          });
-        });
-      })
-      .then(function () {
-        setSetting(CONFIG.passcodeKey, a);
-        error.hidden = false;
-        error.textContent = "Passcode reset. Enter it below to unlock.";
-        $("passcode").value = a;
-        $("reset-token").value = "";
-        $("reset-passcode").value = "";
-        $("reset-passcode-2").value = "";
-        $("gate-reset").hidden = true;
-        $("gate-error").style.background = "rgba(111, 207, 151, 0.14)";
-        $("gate-error").style.color = "#8ee0b0";
-      })
-      .catch(function (err) {
-        error.hidden = false;
-        error.style.background = "";
-        error.style.color = "";
-        error.textContent = "Could not reset the passcode: " + (err.message || "unknown error");
-      })
-      .then(function () {
-        btn.disabled = false;
-        btn.textContent = "Reset passcode";
-      });
-  }
-
   function boot() {
     $("unlock-btn").addEventListener("click", unlock);
     $("passcode").addEventListener("keydown", function (e) {
       if (e.key === "Enter") unlock();
     });
-
-    $("forgot-btn").addEventListener("click", function () {
-      $("gate-reset").hidden = false;
-      $("gate-error").hidden = true;
-      $("reset-token").focus();
-    });
-    $("reset-back").addEventListener("click", function () {
-      $("gate-reset").hidden = true;
-      $("gate-error").hidden = true;
-      $("passcode").focus();
-    });
-    $("reset-btn").addEventListener("click", resetPasscode);
     $("passcode").focus();
   }
 
