@@ -403,6 +403,7 @@
     var prevBox = el("div", "icon-preview__box");
     prevBox.appendChild(prevImg);
     prev.appendChild(prevBox);
+    wrap.appendChild(prev);   // 预览图必须挂进 DOM，否则看不到
 
     function refresh() {
       var custom = link && link.iconImage;
