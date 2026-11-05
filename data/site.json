@@ -217,7 +217,7 @@
         "handle": "ariamuse",
         "url": "https://www.fanvue.com/ariamuse",
         "icon": "fanvue",
-        "iconImage": "assets/photos/fanvue-logo.png",
+        "iconImage": "assets/photos/fanvue-gold.png",
         "featured": true,
         "note": "Exclusive content & early releases"
       },
@@ -231,7 +231,8 @@
         "label": "Threads",
         "handle": "@ariamusex",
         "url": "https://www.threads.com/@ariamusex",
-        "icon": "threads"
+        "icon": "threads",
+        "iconImage": "assets/photos/threads-gold.png"
       },
       {
         "label": "TikTok",
