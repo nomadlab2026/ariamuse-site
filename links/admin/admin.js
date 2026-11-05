@@ -132,9 +132,10 @@
     // GitHub Pages sits behind a CDN, and a cache-busting query string
     // makes every request miss the cache and go back to the origin —
     // measured at 28-30 seconds on a cold cache, far too slow for a
-    // login form. So try the plain URL first (served from the edge in
-    // ~300 ms) and only bust the cache with one retry if that fails.
-    return fetch(plain, { cache: "no-cache" })
+    // login form. "default" lets the browser reuse its cached copy so
+    // a repeat unlock is instant; a "no-cache" request would force a
+    // revalidation that the CDN does not cache, and that one stalled.
+    return fetch(plain, { cache: "default" })
       .then(function (res) {
         if (!res.ok) throw new Error("HTTP " + res.status);
         return res.json();
