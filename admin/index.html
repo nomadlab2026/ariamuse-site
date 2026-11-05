@@ -25,6 +25,34 @@
     </label>
 
     <button class="btn btn--solid" id="unlock-btn">Unlock Studio</button>
+
+    <p class="gate-alt">
+      <button type="button" class="linklike" id="forgot-btn">Forgot the passcode?</button>
+    </p>
+
+    <!-- Forgotten passcode: prove ownership with a GitHub token, then reset -->
+    <div id="gate-reset" hidden>
+      <p class="gate-hint">
+        The passcode is stored as a hash, so it cannot be read back. Paste your
+        GitHub token to prove you own the repository, then set a new passcode.
+      </p>
+      <label class="field">
+        <span class="field-label">GitHub Personal Access Token</span>
+        <input type="password" id="reset-token" placeholder="ghp_…" autocomplete="off" />
+      </label>
+      <label class="field">
+        <span class="field-label">New passcode</span>
+        <input type="password" id="reset-passcode" placeholder="Choose a new passcode" autocomplete="new-password" />
+      </label>
+      <label class="field">
+        <span class="field-label">Confirm new passcode</span>
+        <input type="password" id="reset-passcode-2" placeholder="Repeat it" autocomplete="new-password" />
+      </label>
+      <button class="btn btn--solid" id="reset-btn">Reset passcode</button>
+      <p class="gate-alt">
+        <button type="button" class="linklike" id="reset-back">Back</button>
+      </p>
+    </div>
   </div>
 </div>
 
