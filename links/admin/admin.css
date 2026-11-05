@@ -120,6 +120,35 @@ code { font-family: ui-monospace, SFMono-Regular, Menlo, Consolas, monospace; fo
   text-align: left;
 }
 
+/* 门禁的三个状态：首次设置 / 解锁 / 找回 */
+.gate-hint {
+  margin: 0 0 16px;
+  font-size: 0.82rem;
+  line-height: 1.55;
+  color: var(--muted);
+  text-align: left;
+}
+
+.gate-alt {
+  margin: 14px 0 0;
+  font-size: 0.8rem;
+  color: var(--muted);
+}
+
+.linklike {
+  padding: 0;
+  border: 0;
+  background: none;
+  color: var(--accent);
+  font: inherit;
+  font-size: 0.8rem;
+  text-decoration: underline;
+  text-underline-offset: 3px;
+  cursor: pointer;
+}
+
+.linklike:hover { opacity: 0.8; }
+
 /* ------------------------------------------------------------------ app */
 .app[hidden] { display: none; }
 
