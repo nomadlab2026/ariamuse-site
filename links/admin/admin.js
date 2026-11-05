@@ -790,8 +790,8 @@
         name: "Aria Muse",
         tagline: "",
         bio: "",
-        avatar: "assets/avatar.jpg",
-        background: "assets/background.jpg",
+        avatar: "assets/img/avatar.jpg",
+        background: "assets/img/background.jpg",
         accent: "#e08fa8",
         showAvatarRing: true
       },
