@@ -19,6 +19,7 @@
     branchKey: "aria.links.branch",
     dataPath: "links/data/links.json",
     assetsDir: "links/assets/img",
+    iconDir: "links/assets/icons",
     api: "https://api.github.com"
   };
 
@@ -196,9 +197,10 @@
   }
 
   /* ---------------------------------------------------------- image work */
-  function compressImage(file, maxEdge, quality) {
+  function compressImage(file, maxEdge, quality, mime) {
     maxEdge = maxEdge || 1400;
     quality = quality || 0.82;
+    mime = mime || "image/jpeg";
 
     return new Promise(function (resolve, reject) {
       var reader = new FileReader();
@@ -215,6 +217,10 @@
           canvas.width = w;
           canvas.height = h;
           var ctx = canvas.getContext("2d");
+          if (mime === "image/png") {
+            // 保留透明通道
+            ctx.clearRect(0, 0, w, h);
+          }
           ctx.drawImage(img, 0, 0, w, h);
 
           canvas.toBlob(function (blob) {
@@ -226,7 +232,7 @@
               resolve({ base64: binary, width: w, height: h });
             };
             reader2.readAsDataURL(blob);
-          }, "image/jpeg", quality);
+          }, mime, quality);
         };
         img.src = reader.result;
       };
@@ -242,7 +248,11 @@
       .slice(0, 40) || "image";
   }
 
-  function uploadImage(file, destination, maxEdge) {
+  function uploadImage(file, destination, maxEdge, opts) {
+    opts = opts || {};
+    var asPng = !!opts.png;
+    var dir = opts.dir || CONFIG.assetsDir;
+    var prefix = opts.prefix || "assets/img/";
     var cfg = ghConfig();
     if (!cfg.token) {
       return Promise.reject(new Error("Add your GitHub token in Settings first"));
@@ -262,12 +272,13 @@
     var previewURL = URL.createObjectURL(file);
     thumb.src = previewURL;
 
-    return compressImage(file, maxEdge)
+    return compressImage(file, maxEdge, asPng ? undefined : 0.82,
+                         asPng ? "image/png" : "image/jpeg")
       .then(function (result) {
         status.textContent = "Uploading…";
         var base = slugify(file.name.replace(/\.[^.]+$/, ""));
-        var filename = base + "-" + Date.now().toString(36) + ".jpg";
-        var repoPath = CONFIG.assetsDir + "/" + filename;
+        var filename = base + "-" + Date.now().toString(36) + (asPng ? ".png" : ".jpg");
+        var repoPath = dir + "/" + filename;
 
         return ghGetFile(cfg, repoPath).then(function (existing) {
           return ghPutFile(
@@ -281,7 +292,7 @@
           status.classList.add("is-ok");
           // Stored value is page-relative so the same data file works
           // regardless of where the page is hosted.
-          return "assets/img/" + filename;
+          return prefix + filename;
         });
       })
       .catch(function (err) {
@@ -371,7 +382,8 @@
   }
 
   /* ------------------------------------------------------- section editor */
-  function iconSelect(value) {
+  function iconSelect(value, link) {
+    var wrap = el("div", "icon-picker");
     var sel = el("select");
     var blank = el("option", null, "— none —");
     blank.value = "";
@@ -382,7 +394,82 @@
       if (value === name) o.selected = true;
       sel.appendChild(o);
     });
-    return sel;
+    wrap.appendChild(sel);
+
+    // 预览：优先显示自定义图标图，其次品牌色方块，最后单色 SVG
+    var prev = el("div", "icon-preview");
+    prev.innerHTML = '<img alt="" />';
+    var prevImg = prev.querySelector("img");
+    var prevBox = el("div", "icon-preview__box");
+    prevBox.appendChild(prevImg);
+    prev.appendChild(prevBox);
+
+    function refresh() {
+      var custom = link && link.iconImage;
+      if (custom) {
+        prevImg.src = siteRoot(custom);
+        prevImg.className = "is-custom";
+        return;
+      }
+      var name = sel.value;
+      if (!name) {
+        prevImg.removeAttribute("src");
+        prevImg.className = "";
+        return;
+      }
+      prevImg.className = "is-brand";
+      prevImg.src = siteRoot("assets/icons/br-" + name + ".png");
+      prevImg.onerror = function () {
+        // 没有品牌方块时回退到单色 SVG
+        prevImg.className = "";
+        prevImg.removeAttribute("src");
+        prevBox.style.background = "rgba(245,239,233,.07)";
+      };
+    }
+
+    sel.addEventListener("change", function () {
+      if (link) {
+        link.icon = sel.value;
+        // 切换图标时清掉旧的自定义图，否则会一直盖住新图标
+        if (link.iconImage) {
+          link.iconImage = "";
+          if (link._iconImageInput) link._iconImageInput.value = "";
+        }
+      }
+      refresh();
+      markDirty();
+    });
+    refresh();
+
+    // 上传自定义图标（PNG 保留透明）
+    var uploadLabel = el("label", "btn btn--ghost btn--sm file-btn");
+    uploadLabel.appendChild(document.createTextNode("Upload icon"));
+    var fileInput = el("input");
+    fileInput.type = "file";
+    fileInput.accept = "image/*";
+    fileInput.hidden = true;
+    uploadLabel.appendChild(fileInput);
+    fileInput.addEventListener("change", function () {
+      var f = fileInput.files && fileInput.files[0];
+      if (!f) return;
+      uploadImage(f, "icon", 512, {
+        png: true, dir: CONFIG.iconDir || "links/assets/icons",
+        prefix: "assets/icons/"
+      }).then(function (path) {
+        if (link) {
+          link.iconImage = path;
+          if (link._iconImageInput) link._iconImageInput.value = path;
+        }
+        refresh();
+        markDirty();
+      }).catch(function () { /* 错误已在上传队列中提示 */ });
+      fileInput.value = "";
+    });
+    wrap.appendChild(uploadLabel);
+
+    wrap._refresh = refresh;
+    wrap._sel = sel;
+    return wrap;
   }
 
   function field(labelText, input) {
@@ -516,11 +603,8 @@
           link.note = v;
         })));
 
-        var iconField = field("Icon", iconSelect(link.icon || ""));
-        iconField.querySelector("select").addEventListener("change", function (e) {
-          link.icon = e.target.value;
-          markDirty();
-        });
+        var iconPicker = iconSelect(link.icon || "", link);
+        var iconField = field("Icon", iconPicker);
         fields.appendChild(iconField);
 
         fields.appendChild(field("Badge", textInput(link.badge || "", "BTC", function (v) {
@@ -532,10 +616,14 @@
             link.copy = v;
           })));
 
-        fields.appendChild(field("Icon image <em>— optional</em>",
-          textInput(link.iconImage || "", "assets/icons/fanvue.png", function (v) {
+        var iconImgInput = textInput(link.iconImage || "",
+          "assets/icons/br-fanvue.png", function (v) {
             link.iconImage = v;
-          })));
+            if (iconPicker._refresh) iconPicker._refresh();
+          });
+        link._iconImageInput = iconImgInput;
+        fields.appendChild(field("Icon image <em>— optional, overrides the icon</em>",
+          iconImgInput));
 
         var flags = el("div", "link-flags");
         flags.appendChild(checkboxInput(link.featured, "Featured style", function (v) {
