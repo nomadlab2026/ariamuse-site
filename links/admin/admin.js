@@ -129,8 +129,16 @@
       return Promise.resolve(remotePasscode);
     }
     var url = "../../" + CONFIG.authPath + "?t=" + Date.now();
-    return fetch(url, { cache: "no-store" })
+    // A cold GitHub Pages cache can stall for tens of seconds. Bound the
+    // wait so the gate never hangs forever with the button stuck disabled.
+    var ctrl = typeof AbortController !== "undefined" ? new AbortController() : null;
+    var timer = ctrl ? setTimeout(function () { ctrl.abort(); }, 20000) : null;
+    return fetch(url, {
+      cache: "no-store",
+      signal: ctrl ? ctrl.signal : undefined
+    })
       .then(function (res) {
+        if (timer) clearTimeout(timer);
         if (!res.ok) throw new Error("HTTP " + res.status);
         return res.json();
       })
@@ -1047,16 +1055,35 @@
         showError("Please enter your passcode.");
         return;
       }
-      hash(value).then(function (digest) {
-        return passcodeMatches(digest).then(function (ok) {
-          if (!ok) {
-            showError("Wrong passcode.");
-            return;
-          }
-          setSetting(CONFIG.passcodeKey, digest);
-          enterApp();
+      var btn = $("unlock-btn");
+      if (btn.disabled) return;
+      // The shared admin file lives on GitHub Pages, and a cold cache can
+      // take a while to answer. Show progress so a slow network does not
+      // look like a broken button.
+      setBusy(true);
+      hash(value)
+        .then(function (digest) {
+          return passcodeMatches(digest).then(function (ok) {
+            if (!ok) {
+              showError("Wrong passcode.");
+              return;
+            }
+            setSetting(CONFIG.passcodeKey, digest);
+            enterApp();
+          });
+        })
+        .catch(function (err) {
+          showError("Could not verify the passcode. Check your connection and try again.");
+        })
+        .then(function () {
+          setBusy(false);
         });
-      });
+    }
+
+    function setBusy(on) {
+      var btn = $("unlock-btn");
+      btn.disabled = on;
+      btn.textContent = on ? "Verifying…" : "Unlock";
     }
 
     $("unlock-btn").addEventListener("click", attempt);
