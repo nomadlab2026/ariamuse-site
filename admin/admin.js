@@ -970,7 +970,11 @@
    */
   function fetchAdminFile(bust) {
     var url = "../data/admin.json" + (bust ? "?t=" + Date.now() : "");
-    return fetch(url, { cache: bust ? "no-store" : "no-cache" })
+    // "default" lets the browser reuse its own cached copy, which is what
+    // keeps a repeat unlock instant. "no-cache" would force a revalidation
+    // round trip on every attempt, and the CDN does not cache those —
+    // the second request then sat there for tens of seconds.
+    return fetch(url, { cache: bust ? "no-store" : "default" })
       .then(function (res) {
         if (!res.ok) throw new Error("no-admin-file");
         return res.json();
