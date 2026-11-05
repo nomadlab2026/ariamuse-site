@@ -28,7 +28,8 @@ CNAME                   绑定域名 nomadlab.one
 
 1. 打开 `https://nomadlab.one/admin/`
 2. 输入后台密码（与连接页后台 `/links/admin/` 共用同一个；
-   忘了就点「Forgot the passcode?」用 GitHub Token 重设）
+   密码忘了在项目里跑 `python tools/reset_passcode.py <token> <新密码>` 重设，
+   线上刻意不放重设入口）
 3. 在 7 个标签页里改内容
 4. 点右上角 **Save & Publish**
 5. 约 1 分钟后网站自动更新
