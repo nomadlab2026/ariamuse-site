@@ -128,19 +128,23 @@
     if (remotePasscode !== undefined) {
       return Promise.resolve(remotePasscode);
     }
-    var url = "../../" + CONFIG.authPath + "?t=" + Date.now();
-    // A cold GitHub Pages cache can stall for tens of seconds. Bound the
-    // wait so the gate never hangs forever with the button stuck disabled.
-    var ctrl = typeof AbortController !== "undefined" ? new AbortController() : null;
-    var timer = ctrl ? setTimeout(function () { ctrl.abort(); }, 20000) : null;
-    return fetch(url, {
-      cache: "no-store",
-      signal: ctrl ? ctrl.signal : undefined
-    })
+    var plain = "../../" + CONFIG.authPath;
+    // GitHub Pages sits behind a CDN, and a cache-busting query string
+    // makes every request miss the cache and go back to the origin —
+    // measured at 28-30 seconds on a cold cache, far too slow for a
+    // login form. So try the plain URL first (served from the edge in
+    // ~300 ms) and only bust the cache with one retry if that fails.
+    return fetch(plain, { cache: "no-cache" })
       .then(function (res) {
-        if (timer) clearTimeout(timer);
         if (!res.ok) throw new Error("HTTP " + res.status);
         return res.json();
+      })
+      .catch(function () {
+        return fetch(plain + "?t=" + Date.now(), { cache: "no-store" })
+          .then(function (res) {
+            if (!res.ok) throw new Error("HTTP " + res.status);
+            return res.json();
+          });
       })
       .then(function (cfg) {
         remoteReachable = true;
@@ -155,7 +159,6 @@
         return null;
       });
   }
-
   /**
    * Check a digest against the shared file first, then against this browser.
    * The shared file is the single source of truth: whenever it can be read
@@ -164,7 +167,23 @@
    */
   function passcodeMatches(digest) {
     return fetchRemotePasscode().then(function (remote) {
-      if (remote) return digest === remote;
+      if (remote) {
+        if (digest === remote) return true;
+        // The edge may still be serving the previous hash right after a
+        // passcode change. Confirm against a cache-busted copy before
+        // telling the user their passcode is wrong.
+        return fetch("../../" + CONFIG.authPath + "?t=" + Date.now(), { cache: "no-store" })
+          .then(function (res) {
+            if (!res.ok) return false;
+            return res.json();
+          })
+          .then(function (fresh) {
+            return !!(fresh && fresh.passcode && fresh.passcode === digest);
+          })
+          .catch(function () {
+            return false;
+          });
+      }
       if (!remoteReachable) {
         var local = getSetting(CONFIG.passcodeKey, "");
         return !!(local && digest === local);
