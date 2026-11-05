@@ -221,6 +221,13 @@ button { font-family: inherit; }
   overflow: hidden;
 }
 
+/* 品牌色方块图标：铺满整个方框 */
+.link-icon img.is-brand {
+  width: 100%;
+  height: 100%;
+  object-fit: cover;
+}
+
 .link-icon img {
   width: 24px;
   height: 24px;
@@ -236,6 +243,12 @@ button { font-family: inherit; }
 .link-card.is-featured .link-icon {
   background: #ffffff;
   box-shadow: 0 4px 12px rgba(0, 0, 0, 0.14);
+}
+
+/* featured 卡里若用品牌色方块，直接铺满，不要白底框 */
+.link-card.is-featured .link-icon.has-brand {
+  background: transparent;
+  box-shadow: 0 4px 14px rgba(0, 0, 0, 0.18);
 }
 
 .link-body {
