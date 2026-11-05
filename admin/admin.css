@@ -111,6 +111,20 @@ img { display: block; max-width: 100%; }
   font-size: 0.8125rem;
 }
 
+.gate-hint {
+  margin: 0 0 1.1rem;
+  font-size: 0.8125rem;
+  line-height: 1.55;
+  color: var(--muted);
+}
+
+.gate-alt {
+  margin: 0.9rem 0 0;
+  font-size: 0.8125rem;
+  color: var(--muted);
+  text-align: center;
+}
+
 /* ---------------------------------------------------------------- app */
 .app { min-height: 100vh; display: flex; flex-direction: column; }
 
