@@ -8,6 +8,13 @@
 
   var DATA_URL = "data/links.json";
   var ICON_URL = "assets/icons/";
+  var BRAND_ICON_URL = "assets/icons/br-";
+  /* 已知有品牌色方块图标的名称；其余回退到单色 SVG */
+  var BRAND_ICONS = {
+    bitcoin: 1, coffee: 1, discord: 1, ethereum: 1, fanvue: 1, gift: 1,
+    github: 1, globe: 1, instagram: 1, link: 1, mail: 1, spotify: 1,
+    star: 1, telegram: 1, tether: 1, threads: 1, tiktok: 1, x: 1, youtube: 1
+  };
 
   var els = {
     bgImage: document.getElementById("bg-image"),
@@ -201,6 +208,23 @@
       return box;
     }
     if (link.icon) {
+      // 品牌色方块图标（br-<name>.png）优先，缺失时回退单色 SVG
+      if (BRAND_ICONS[link.icon]) {
+        var bimg = el("img");
+        bimg.className = "is-brand";
+        bimg.src = BRAND_ICON_URL + link.icon + ".png";
+        bimg.alt = "";
+        box.classList.add("has-brand");
+        bimg.addEventListener("error", function () {
+          box.classList.remove("has-brand");
+          box.innerHTML = "";
+          loadIcon(link.icon).then(function (d) {
+            if (d) box.appendChild(svgIcon(d));
+          });
+        });
+        box.appendChild(bimg);
+        return box;
+      }
       loadIcon(link.icon).then(function (d) {
         if (d) box.appendChild(svgIcon(d));
         else box.appendChild(svgIcon(
