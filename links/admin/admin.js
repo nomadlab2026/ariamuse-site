@@ -122,6 +122,7 @@
    * copy in localStorage is only a fast-path / offline fallback.
    */
   var remotePasscode = undefined;   // undefined = not fetched yet
+  var remoteReachable = false;      // did the shared file actually load?
 
   function fetchRemotePasscode() {
     if (remotePasscode !== undefined) {
@@ -130,25 +131,38 @@
     var url = "../../" + CONFIG.authPath + "?t=" + Date.now();
     return fetch(url, { cache: "no-store" })
       .then(function (res) {
-        if (!res.ok) return null;
+        if (!res.ok) throw new Error("HTTP " + res.status);
         return res.json();
       })
       .then(function (cfg) {
+        remoteReachable = true;
         remotePasscode = (cfg && cfg.passcode) ? cfg.passcode : null;
         return remotePasscode;
       })
       .catch(function () {
-        remotePasscode = null;
+        // The shared file is unreachable — leave remotePasscode undefined so
+        // a later attempt can try again. Never treat "could not read it" as
+        // "no passcode exists", or the gate would fall open.
+        remoteReachable = false;
         return null;
       });
   }
 
-  /** Check a digest against both the remote hash and the local one. */
+  /**
+   * Check a digest against the shared file first, then against this browser.
+   * The shared file is the single source of truth: whenever it can be read
+   * it decides, so changing the passcode takes effect on every device.
+   * The browser copy is only an offline fallback.
+   */
   function passcodeMatches(digest) {
-    var local = getSetting(CONFIG.passcodeKey, "");
-    if (local && digest === local) return Promise.resolve(true);
     return fetchRemotePasscode().then(function (remote) {
-      return !!(remote && digest === remote);
+      if (remote) return digest === remote;
+      if (!remoteReachable) {
+        var local = getSetting(CONFIG.passcodeKey, "");
+        return !!(local && digest === local);
+      }
+      // The file loaded but holds no passcode → deny.
+      return false;
     });
   }
 
@@ -904,17 +918,42 @@
         toast("The two passcodes do not match.", "err");
         return;
       }
+      var token = (getSetting(CONFIG.tokenKey, "") || "").trim();
+      if (!token) {
+        toast("Add your GitHub token first so the new passcode can be saved for every device.", "err");
+        showTab("settings");
+        return;
+      }
+      var cfg = {
+        owner: (getSetting(CONFIG.ownerKey, DEFAULTS.owner) || DEFAULTS.owner).trim(),
+        repo: (getSetting(CONFIG.repoKey, DEFAULTS.repo) || DEFAULTS.repo).trim(),
+        branch: (getSetting(CONFIG.branchKey, DEFAULTS.branch) || DEFAULTS.branch).trim(),
+        token: token
+      };
       hash(a).then(function (digest) {
-        setSetting(CONFIG.passcodeKey, digest);
-        $("new-passcode").value = "";
-        $("confirm-passcode").value = "";
-        toast("Passcode saved for this browser.", "ok");
+        return toBase64(JSON.stringify({ passcode: digest }, null, 2)).then(function (encoded) {
+          return ghGetFile(cfg, CONFIG.authPath).then(function (existing) {
+            return ghPutFile(
+              cfg, CONFIG.authPath, encoded,
+              "Update the shared admin passcode from Links Admin",
+              existing ? existing.sha : null
+            );
+          });
+        }).then(function () {
+          remotePasscode = digest;
+          setSetting(CONFIG.passcodeKey, digest);
+          $("new-passcode").value = "";
+          $("confirm-passcode").value = "";
+          toast("Passcode updated — it now works on every device.", "ok");
+        });
+      }).catch(function (err) {
+        toast("Could not save the passcode: " + (err.message || "unknown error"), "err");
       });
     });
 
     $("clear-passcode").addEventListener("click", function () {
       setSetting(CONFIG.passcodeKey, "");
-      toast("Passcode removed from this browser.", "ok");
+      toast("Local copy removed. The passcode itself is unchanged.", "ok");
     });
   }
 
@@ -972,17 +1011,20 @@
 
     /* ------------------------------------------------------------------
        The passcode is a SHA-256 hash kept in data/admin.json (shared with
-       the main site admin) and mirrored into this browser's localStorage
-       as a fast path. The gate therefore has three states:
-         setup  — no passcode anywhere → offer to set one right here
-         unlock — a passcode exists    → ask for it
-         reset  — passcode forgotten   → prove ownership with a GitHub token
+       the main site admin). That shared file is the only source of truth,
+       so one password works on both panels and on every device.
+
+       There is deliberately NO "forgot the passcode" link and NO way to
+       create a passcode from this page. Both would hand anyone who finds
+       the admin URL the ability to take the panel over. The gate is one
+       lock: enter the passcode, or nothing happens.
+
+       Changing the passcode is done from inside the panel (Settings) or
+       with the local tools/reset_passcode.py script.
        ------------------------------------------------------------------ */
 
     function showMode(mode) {
-      $("gate-setup").hidden = mode !== "setup";
       $("gate-unlock").hidden = mode !== "unlock";
-      $("gate-reset").hidden = mode !== "reset";
       errorBox.hidden = true;
     }
 
@@ -998,7 +1040,7 @@
       errorBox.hidden = false;
     }
 
-    /* ---- state 2: unlock with an existing passcode ---- */
+    /* ---- unlock with the passcode ---- */
     function attempt() {
       var value = $("passcode").value;
       if (!value) {
@@ -1006,161 +1048,21 @@
         return;
       }
       hash(value).then(function (digest) {
-        return passcodeMatches(digest);
-      }).then(function (ok) {
-        if (ok) {
+        return passcodeMatches(digest).then(function (ok) {
+          if (!ok) {
+            showError("Wrong passcode.");
+            return;
+          }
+          setSetting(CONFIG.passcodeKey, digest);
           enterApp();
-        } else {
-          showError("Wrong passcode.");
-        }
-      });
-    }
-
-    /* ---- state 1: first run — set a passcode immediately ----
-       The hash is mirrored into this browser AND written to the shared
-       data/admin.json (when a GitHub token is available), so the same
-       password works on the main site admin and on any device. */
-    function savePasscode() {
-      var a = $("setup-passcode").value;
-      var b = $("setup-passcode-2").value;
-      if (!a) {
-        showError("Choose a passcode first.");
-        return;
-      }
-      if (a !== b) {
-        showError("The two passcodes do not match.");
-        return;
-      }
-      hash(a).then(function (digest) {
-        setSetting(CONFIG.passcodeKey, digest);
-        $("setup-passcode").value = "";
-        $("setup-passcode-2").value = "";
-        enterApp();
-
-        // Best effort: also publish the hash so the password is not tied to
-        // this browser. Failure is not fatal — the local copy still works.
-        publishPasscode(digest);
-      });
-    }
-
-    function publishPasscode(digest) {
-      var token = (getSetting(CONFIG.tokenKey, "") || "").trim();
-      if (!token) return;
-      var cfg = {
-        owner: (getSetting(CONFIG.ownerKey, DEFAULTS.owner) || DEFAULTS.owner).trim(),
-        repo: (getSetting(CONFIG.repoKey, DEFAULTS.repo) || DEFAULTS.repo).trim(),
-        branch: (getSetting(CONFIG.branchKey, DEFAULTS.branch) || DEFAULTS.branch).trim(),
-        token: token
-      };
-      Promise.all([
-        toBase64(JSON.stringify({ passcode: digest }, null, 2)),
-        ghGetFile(cfg, CONFIG.authPath)
-      ]).then(function (parts) {
-        return ghPutFile(
-          cfg, CONFIG.authPath, parts[0],
-          "Set the shared admin passcode from Links Admin",
-          parts[1] ? parts[1].sha : null
-        );
-      }).then(function () {
-        remotePasscode = digest;
-        toast("Passcode saved and synced to the shared admin file.", "ok");
-      }).catch(function () {
-        toast("Passcode saved in this browser only (could not sync to the server).", "err");
-      });
-    }
-
-    /* ---- state 3: forgotten passcode — reset it with a GitHub token ----
-       The token proves the caller owns the repository; it is used for the API
-       call only and is never written to disk by this flow.               */
-    function resetPasscode() {
-      var token = ($("reset-token").value || "").trim();
-      var a = $("reset-passcode").value;
-      var b = $("reset-passcode-2").value;
-
-      if (!token) {
-        showError("Paste your GitHub token to continue.");
-        return;
-      }
-      if (!a) {
-        showError("Choose a new passcode.");
-        return;
-      }
-      if (a !== b) {
-        showError("The two passcodes do not match.");
-        return;
-      }
-
-      var cfg = {
-        owner: (getSetting(CONFIG.ownerKey, DEFAULTS.owner) || DEFAULTS.owner).trim(),
-        repo: (getSetting(CONFIG.repoKey, DEFAULTS.repo) || DEFAULTS.repo).trim(),
-        branch: (getSetting(CONFIG.branchKey, DEFAULTS.branch) || DEFAULTS.branch).trim(),
-        token: token
-      };
-      var btn = $("reset-btn");
-      btn.disabled = true;
-      btn.textContent = "Resetting…";
-
-      hash(a)
-        .then(function (hashed) {
-          return fetch(CONFIG.api + "/repos/" + cfg.owner + "/" + cfg.repo, {
-            headers: ghHeaders(token)
-          }).then(function (res) {
-            if (!res.ok) {
-              return res.json().then(function (body) {
-                throw new Error(body.message || "HTTP " + res.status);
-              });
-            }
-            return res.json();
-          }).then(function () {
-            // Token is valid for the repository — write the new hash to the
-            // shared file so both panels and every device accept it.
-            return toBase64(JSON.stringify({ passcode: hashed }, null, 2)).then(function (encoded) {
-              return ghGetFile(cfg, CONFIG.authPath).then(function (existing) {
-                return ghPutFile(cfg, CONFIG.authPath, encoded, "Reset the shared admin passcode", existing ? existing.sha : null);
-              });
-            }).then(function () {
-              return hashed;
-            });
-          });
-        })
-        .then(function (hashed) {
-          setSetting(CONFIG.passcodeKey, hashed);
-          remotePasscode = hashed;
-          $("reset-token").value = "";
-          $("reset-passcode").value = "";
-          $("reset-passcode-2").value = "";
-          showMode("unlock");
-          showError("Passcode reset. Enter the new passcode below.");
-          $("passcode").value = a;
-        })
-        .catch(function (err) {
-          showError("Could not reset the passcode: " + (err.message || "unknown error"));
-        })
-        .then(function () {
-          btn.disabled = false;
-          btn.textContent = "Reset passcode";
         });
+      });
     }
 
     $("unlock-btn").addEventListener("click", attempt);
     $("passcode").addEventListener("keydown", function (e) {
       if (e.key === "Enter") attempt();
     });
-
-    $("setup-btn").addEventListener("click", savePasscode);
-    $("setup-passcode-2").addEventListener("keydown", function (e) {
-      if (e.key === "Enter") savePasscode();
-    });
-
-    $("forgot-btn").addEventListener("click", function () {
-      showMode("reset");
-    });
-    $("reset-back").addEventListener("click", function () {
-      // Always go back to the unlock screen — the point of the reset
-      // panel is to recover an existing passcode, not to create one.
-      showMode("unlock");
-    });
-    $("reset-btn").addEventListener("click", resetPasscode);
 
     $("logout-btn").addEventListener("click", function () {
       $("gate").hidden = false;
@@ -1169,17 +1071,8 @@
       showMode("unlock");
     });
 
-    // Decide which screen to show. If a passcode already exists on the
-    // server (it is shared with the main site admin) we always ask for it
-    // and never offer to create a new one, so the shared password cannot
-    // be overwritten by accident. Only when there is no passcode anywhere
-    // do we offer the setup screen.
     showMode("unlock");
-    fetchRemotePasscode().then(function (remote) {
-      if (!getSetting(CONFIG.passcodeKey, "") && !remote) {
-        showMode("setup");
-      }
-    });
+    $("passcode").focus();
   }
 
   function start() {
