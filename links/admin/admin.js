@@ -183,7 +183,7 @@
     return {
       Authorization: "Bearer " + token,
       Accept: "application/vnd.github+json",
-      "X-GitHub-Api-Version": "2022-11-24",
+      "X-GitHub-Api-Version": "2022-11-28",
       "Content-Type": "application/json"
     };
   }
