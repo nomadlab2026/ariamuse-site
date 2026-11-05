@@ -29,19 +29,8 @@
           "note": "Exclusive content · 24/7 explicit chat",
           "url": "https://www.fanvue.com/ariamuse",
           "icon": "fanvue",
-          "iconImage": "assets/icons/fanvue.png",
-          "featured": true,
-          "badge": "",
-          "enabled": true
-        },
-        {
-          "id": "l-telegram",
-          "label": "Telegram",
-          "note": "Daily drops & behind the scenes",
-          "url": "https://t.me/ariamuse",
-          "icon": "telegram",
           "iconImage": "",
-          "featured": false,
+          "featured": true,
           "badge": "",
           "enabled": true
         }
