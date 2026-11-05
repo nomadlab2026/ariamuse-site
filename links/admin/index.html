@@ -1,0 +1,258 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8" />
+<meta name="viewport" content="width=device-width, initial-scale=1.0" />
+<title>Aria Muse — Links Admin</title>
+<meta name="robots" content="noindex, nofollow" />
+<meta name="theme-color" content="#12100f" />
+<link rel="icon" href="data:image/svg+xml,<svg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 100 100'><rect width='100' height='100' fill='%2312100f'/><text x='50' y='70' font-family='Georgia,serif' font-size='58' fill='%23e08fa8' text-anchor='middle'>A</text></svg>" />
+<link rel="stylesheet" href="admin.css" />
+</head>
+<body>
+
+<!-- ================= GATE ================= -->
+<div class="gate" id="gate">
+  <div class="gate-card">
+    <div class="gate-brand">ARIA MUSE<sup>®</sup></div>
+    <p class="gate-sub">Links Admin</p>
+
+    <div id="gate-error" class="gate-error" hidden></div>
+
+    <label class="field">
+      <span class="field-label">Access passcode</span>
+      <input type="password" id="passcode" placeholder="Enter your passcode" autocomplete="current-password" />
+    </label>
+
+    <button class="btn btn--solid" id="unlock-btn">Unlock</button>
+  </div>
+</div>
+
+<!-- ================= APP ================= -->
+<div class="app" id="app" hidden>
+
+  <header class="topbar">
+    <div class="topbar-left">
+      <span class="topbar-brand">ARIA MUSE<sup>®</sup></span>
+      <span class="topbar-sep"></span>
+      <span class="topbar-label">Links Admin</span>
+    </div>
+    <div class="topbar-right">
+      <span class="save-state" id="save-state">All changes saved</span>
+      <a class="btn btn--ghost btn--sm" href="../" target="_blank">View page</a>
+      <button class="btn btn--ghost btn--sm" id="logout-btn">Lock</button>
+      <button class="btn btn--solid btn--sm" id="publish-btn">Save &amp; Publish</button>
+    </div>
+  </header>
+
+  <nav class="tabs" id="tabs">
+    <button class="tab is-active" data-tab="profile">Profile</button>
+    <button class="tab" data-tab="sections">Sections &amp; Links</button>
+    <button class="tab" data-tab="theme">Theme</button>
+    <button class="tab" data-tab="settings">Settings</button>
+  </nav>
+
+  <main class="content" id="content">
+
+    <!-- ---------- PROFILE ---------- -->
+    <section class="panel is-active" data-panel="profile">
+      <h2 class="panel-title">Profile</h2>
+      <p class="panel-hint">Your name, tagline and the images shown at the top of the page.</p>
+
+      <div class="grid-2">
+        <label class="field">
+          <span class="field-label">Display name</span>
+          <input type="text" data-bind="profile.name" placeholder="Aria Muse" />
+        </label>
+        <label class="field">
+          <span class="field-label">Tagline</span>
+          <input type="text" data-bind="profile.tagline" placeholder="The digital muse of your dreams" />
+        </label>
+      </div>
+
+      <label class="field">
+        <span class="field-label">Short bio <em>— shown under the tagline</em></span>
+        <input type="text" data-bind="profile.bio" placeholder="AI muse · Virtual couture · Available worldwide" />
+      </label>
+
+      <h3 class="sub-title">Images</h3>
+      <p class="panel-hint">Upload a file, or paste an image URL. Uploaded files are compressed and stored with the page.</p>
+
+      <div class="image-grid">
+        <div class="image-card">
+          <div class="image-preview image-preview--avatar">
+            <img id="avatar-preview" src="" alt="" />
+          </div>
+          <label class="field">
+            <span class="field-label">Avatar</span>
+            <input type="text" data-bind="profile.avatar" placeholder="assets/avatar.jpg" />
+          </label>
+          <div class="image-actions">
+            <label class="btn btn--ghost btn--sm file-btn">
+              Upload<input type="file" id="avatar-file" accept="image/*" hidden />
+            </label>
+            <button class="btn btn--ghost btn--sm" type="button" id="avatar-clear">Remove</button>
+          </div>
+        </div>
+
+        <div class="image-card">
+          <div class="image-preview image-preview--cover">
+            <img id="bg-preview" src="" alt="" />
+          </div>
+          <label class="field">
+            <span class="field-label">Background</span>
+            <input type="text" data-bind="profile.background" placeholder="assets/background.jpg" />
+          </label>
+          <div class="image-actions">
+            <label class="btn btn--ghost btn--sm file-btn">
+              Upload<input type="file" id="bg-file" accept="image/*" hidden />
+            </label>
+            <button class="btn btn--ghost btn--sm" type="button" id="bg-clear">Remove</button>
+          </div>
+        </div>
+      </div>
+
+      <label class="field field--inline">
+        <input type="checkbox" data-bind="profile.showAvatarRing" />
+        <span class="field-label">Show the coloured ring around the avatar</span>
+      </label>
+
+      <div id="upload-queue" class="upload-queue" hidden></div>
+    </section>
+
+    <!-- ---------- SECTIONS ---------- -->
+    <section class="panel" data-panel="sections">
+      <h2 class="panel-title">Sections &amp; Links</h2>
+      <p class="panel-hint">
+        Each section is a titled group of links. A link with a “wallet address”
+        shows a copy button and a QR code instead of the arrow.
+      </p>
+
+      <div id="section-list"></div>
+
+      <button class="btn btn--ghost" id="add-section" type="button">+ Add section</button>
+    </section>
+
+    <!-- ---------- THEME ---------- -->
+    <section class="panel" data-panel="theme">
+      <h2 class="panel-title">Theme</h2>
+      <p class="panel-hint">Colours and corner radius. Leave a field empty to use the default.</p>
+
+      <div class="grid-2">
+        <label class="field">
+          <span class="field-label">Page background</span>
+          <input type="text" data-bind="theme.bg" placeholder="#12100f" />
+        </label>
+        <label class="field">
+          <span class="field-label">Card background</span>
+          <input type="text" data-bind="theme.surface" placeholder="#1c1918" />
+        </label>
+        <label class="field">
+          <span class="field-label">Card background (hover)</span>
+          <input type="text" data-bind="theme.surfaceAlt" placeholder="#241f1e" />
+        </label>
+        <label class="field">
+          <span class="field-label">Text colour</span>
+          <input type="text" data-bind="theme.text" placeholder="#f5efe9" />
+        </label>
+        <label class="field">
+          <span class="field-label">Muted text</span>
+          <input type="text" data-bind="theme.muted" placeholder="#a89e98" />
+        </label>
+        <label class="field">
+          <span class="field-label">Accent</span>
+          <input type="text" data-bind="theme.accent" placeholder="#e08fa8" />
+        </label>
+      </div>
+
+      <label class="field">
+        <span class="field-label">Corner radius <em>— in pixels</em></span>
+        <input type="number" data-bind="theme.radius" placeholder="18" min="0" max="40" />
+      </label>
+
+      <h3 class="sub-title">Footer</h3>
+      <label class="field field--inline">
+        <input type="checkbox" data-bind="footer.show" />
+        <span class="field-label">Show the footer</span>
+      </label>
+      <label class="field">
+        <span class="field-label">Footer text</span>
+        <input type="text" data-bind="footer.text" placeholder="© 2026 Aria Muse" />
+      </label>
+      <label class="field">
+        <span class="field-label">Footer note</span>
+        <textarea rows="2" data-bind="footer.note"></textarea>
+      </label>
+    </section>
+
+    <!-- ---------- SETTINGS ---------- -->
+    <section class="panel" data-panel="settings">
+      <h2 class="panel-title">Settings</h2>
+      <p class="panel-hint">
+        Publishing uses a GitHub Personal Access Token with “Contents: read and write”
+        on the site repository. The token is stored only in this browser.
+      </p>
+
+      <div class="grid-2">
+        <label class="field">
+          <span class="field-label">GitHub username</span>
+          <input type="text" id="gh-owner" placeholder="nomadlab2026" />
+        </label>
+        <label class="field">
+          <span class="field-label">Repository</span>
+          <input type="text" id="gh-repo" placeholder="ariamuse-site" />
+        </label>
+        <label class="field">
+          <span class="field-label">Branch</span>
+          <input type="text" id="gh-branch" placeholder="main" />
+        </label>
+        <label class="field">
+          <span class="field-label">Data file path</span>
+          <input type="text" id="gh-path" placeholder="links/data/links.json" />
+        </label>
+      </div>
+
+      <label class="field">
+        <span class="field-label">Personal Access Token</span>
+        <input type="password" id="gh-token" placeholder="ghp_…" />
+      </label>
+
+      <div class="status-box" id="conn-status">Not connected yet.</div>
+
+      <h3 class="sub-title">Access passcode</h3>
+      <p class="panel-hint">
+        The passcode is stored only in this browser (as a SHA-256 hash), so it
+        protects the panel on this device. Set it the first time you use the panel.
+      </p>
+
+      <div class="grid-2">
+        <label class="field">
+          <span class="field-label">New passcode</span>
+          <input type="password" id="new-passcode" placeholder="Choose a passcode" autocomplete="new-password" />
+        </label>
+        <label class="field">
+          <span class="field-label">Confirm passcode</span>
+          <input type="password" id="confirm-passcode" placeholder="Repeat it" autocomplete="new-password" />
+        </label>
+      </div>
+      <div class="row-actions">
+        <button class="btn btn--ghost btn--sm" id="set-passcode" type="button">Save passcode</button>
+        <button class="btn btn--ghost btn--sm" id="clear-passcode" type="button">Remove passcode</button>
+      </div>
+
+      <h3 class="sub-title">How publishing works</h3>
+      <ul class="hint-list">
+        <li>The admin writes <code>data/links.json</code> straight to GitHub through the API.</li>
+        <li>The commit triggers the “Deploy to GitHub Pages” workflow, so the live page updates within a minute.</li>
+        <li>Nothing needs to be uploaded by hand.</li>
+      </ul>
+    </section>
+
+  </main>
+</div>
+
+<div class="toast" id="toast" role="status" aria-live="polite"></div>
+
+<script src="admin.js"></script>
+</body>
+</html>
