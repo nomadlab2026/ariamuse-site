@@ -27,7 +27,8 @@ CNAME                   绑定域名 nomadlab.one
 ## 二、日常怎么改内容
 
 1. 打开 `https://nomadlab.one/admin/`
-2. 输入密码 `ariamuse2026`
+2. 输入后台密码（与连接页后台 `/links/admin/` 共用同一个；
+   忘了就点「Forgot the passcode?」用 GitHub Token 重设）
 3. 在 7 个标签页里改内容
 4. 点右上角 **Save & Publish**
 5. 约 1 分钟后网站自动更新
