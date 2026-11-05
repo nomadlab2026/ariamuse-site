@@ -1,0 +1,78 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8" />
+<meta name="viewport" content="width=device-width, initial-scale=1.0, viewport-fit=cover" />
+<title>Aria Muse — Links</title>
+<meta name="description" content="All of Aria Muse's links — social media, Fanvue, and crypto support." />
+<meta name="theme-color" content="#12100f" />
+<meta property="og:type" content="profile" />
+<meta property="og:title" content="Aria Muse" />
+<meta property="og:description" content="The digital muse of your dreams" />
+<meta property="og:image" content="assets/avatar.jpg" />
+<meta name="twitter:card" content="summary" />
+<link rel="icon" href="data:image/svg+xml,<svg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 100 100'><rect width='100' height='100' fill='%2312100f'/><text x='50' y='70' font-family='Georgia,serif' font-size='60' fill='%23e08fa8' text-anchor='middle'>A</text></svg>" />
+<link rel="stylesheet" href="assets/css/links.css" />
+</head>
+<body>
+
+<!-- ================= Background ================= -->
+<div class="bg" id="bg">
+  <img id="bg-image" src="" alt="" />
+  <div class="bg-scrim"></div>
+</div>
+
+<!-- ================= Page ================= -->
+<main class="page" id="page">
+
+  <!-- Profile -->
+  <header class="profile" id="profile">
+    <div class="avatar-wrap">
+      <div class="avatar-ring" id="avatar-ring">
+        <img class="avatar" id="avatar" src="" alt="" />
+      </div>
+    </div>
+    <h1 class="name" id="name">Aria Muse</h1>
+    <p class="tagline" id="tagline"></p>
+    <p class="bio" id="bio"></p>
+    <div class="share-row">
+      <button class="share-btn" id="share-btn" type="button">
+        <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true">
+          <path d="M4 12v7a2 2 0 0 0 2 2h12a2 2 0 0 0 2-2v-7" />
+          <path d="M16 6l-4-4-4 4" /><path d="M12 2v13" />
+        </svg>
+        <span>Share</span>
+      </button>
+    </div>
+  </header>
+
+  <!-- Sections (rendered from data) -->
+  <div id="sections" class="sections"></div>
+
+  <!-- Footer -->
+  <footer class="footer" id="footer">
+    <p class="footer-text" id="footer-text"></p>
+    <p class="footer-note" id="footer-note"></p>
+  </footer>
+
+</main>
+
+<!-- ================= Copy toast ================= -->
+<div class="toast" id="toast" role="status" aria-live="polite"></div>
+
+<!-- ================= QR modal ================= -->
+<div class="modal" id="qr-modal" role="dialog" aria-modal="true" aria-labelledby="qr-title" hidden>
+  <div class="modal-backdrop" data-close></div>
+  <div class="modal-card" role="document">
+    <button class="modal-close" id="qr-close" type="button" aria-label="Close">✕</button>
+    <h3 class="modal-title" id="qr-title">Scan to pay</h3>
+    <div class="qr-holder" id="qr-holder"></div>
+    <p class="qr-label" id="qr-label"></p>
+    <button class="qr-copy" id="qr-copy" type="button">Copy address</button>
+  </div>
+</div>
+
+<script src="assets/js/qrcode.js"></script>
+<script src="assets/js/links.js"></script>
+</body>
+</html>
