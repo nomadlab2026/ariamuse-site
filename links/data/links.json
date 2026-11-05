@@ -1,0 +1,171 @@
+{
+  "profile": {
+    "name": "Aria Muse",
+    "handle": "@ariamusex",
+    "tagline": "The digital muse of your dreams",
+    "bio": "AI muse · Virtual couture · Available worldwide",
+    "avatar": "assets/img/avatar.jpg",
+    "background": "assets/img/background.jpg",
+    "accent": "#e08fa8",
+    "showAvatarRing": true
+  },
+  "theme": {
+    "bg": "#12100f",
+    "surface": "#1c1918",
+    "surfaceAlt": "#241f1e",
+    "text": "#f5efe9",
+    "muted": "#a89e98",
+    "radius": 18
+  },
+  "sections": [
+    {
+      "id": "hot",
+      "title": "Hot content",
+      "emoji": "🔥",
+      "links": [
+        {
+          "id": "l-fanvue",
+          "label": "Fanvue",
+          "note": "Exclusive content · 24/7 explicit chat",
+          "url": "https://www.fanvue.com/ariamuse",
+          "icon": "fanvue",
+          "iconImage": "assets/icons/fanvue.png",
+          "featured": true,
+          "badge": "",
+          "enabled": true
+        },
+        {
+          "id": "l-telegram",
+          "label": "Telegram",
+          "note": "Daily drops & behind the scenes",
+          "url": "https://t.me/ariamuse",
+          "icon": "telegram",
+          "iconImage": "",
+          "featured": false,
+          "badge": "",
+          "enabled": true
+        }
+      ]
+    },
+    {
+      "id": "social",
+      "title": "Social",
+      "emoji": "😍",
+      "links": [
+        {
+          "id": "l-instagram",
+          "label": "Instagram",
+          "note": "@ariamusex",
+          "url": "https://www.instagram.com/ariamusex",
+          "icon": "instagram",
+          "iconImage": "",
+          "featured": false,
+          "badge": "",
+          "enabled": true
+        },
+        {
+          "id": "l-threads",
+          "label": "Threads",
+          "note": "@ariamusex",
+          "url": "https://www.threads.com/@ariamusex",
+          "icon": "threads",
+          "iconImage": "",
+          "featured": false,
+          "badge": "",
+          "enabled": true
+        },
+        {
+          "id": "l-tiktok",
+          "label": "TikTok",
+          "note": "@airamuse",
+          "url": "https://www.tiktok.com/@airamuse",
+          "icon": "tiktok",
+          "iconImage": "",
+          "featured": false,
+          "badge": "",
+          "enabled": true
+        },
+        {
+          "id": "l-x",
+          "label": "X",
+          "note": "@ariamuse_ai",
+          "url": "https://x.com/ariamuse_ai",
+          "icon": "x",
+          "iconImage": "",
+          "featured": false,
+          "badge": "",
+          "enabled": true
+        }
+      ]
+    },
+    {
+      "id": "support",
+      "title": "Support me",
+      "emoji": "💗",
+      "links": [
+        {
+          "id": "l-btc",
+          "label": "Bitcoin",
+          "note": "bc1pw8zg8l35tzv2ua075dkgwjfergwjduk77rr2p0s4y2yy0p3y9mvqjvnj5j",
+          "url": "bitcoin:bc1pw8zg8l35tzv2ua075dkgwjfergwjduk77rr2p0s4y2yy0p3y9mvqjvnj5j",
+          "icon": "bitcoin",
+          "iconImage": "",
+          "featured": false,
+          "badge": "BTC",
+          "enabled": true,
+          "copy": "bc1pw8zg8l35tzv2ua075dkgwjfergwjduk77rr2p0s4y2yy0p3y9mvqjvnj5j",
+          "qr": true
+        },
+        {
+          "id": "l-eth",
+          "label": "Ethereum",
+          "note": "0x0718715FDb9a117f8932Aa78e49Cfd576dadF288",
+          "url": "ethereum:0x0718715FDb9a117f8932Aa78e49Cfd576dadF288",
+          "icon": "ethereum",
+          "iconImage": "",
+          "featured": false,
+          "badge": "ETH",
+          "enabled": true,
+          "copy": "0x0718715FDb9a117f8932Aa78e49Cfd576dadF288",
+          "qr": true
+        },
+        {
+          "id": "l-usdt",
+          "label": "USDT",
+          "note": "0x51707Ed8b7ebE3cB04c05D65De55636c2ce9b846",
+          "url": "ethereum:0x51707Ed8b7ebE3cB04c05D65De55636c2ce9b846",
+          "icon": "tether",
+          "iconImage": "",
+          "featured": false,
+          "badge": "USDT · MATIC",
+          "enabled": true,
+          "copy": "0x51707Ed8b7ebE3cB04c05D65De55636c2ce9b846",
+          "qr": true
+        }
+      ]
+    },
+    {
+      "id": "contact",
+      "title": "Contact",
+      "emoji": "📩",
+      "links": [
+        {
+          "id": "l-email",
+          "label": "Email",
+          "note": "Bookings · Press · Partnerships",
+          "url": "mailto:ariamuseai@outlook.com",
+          "icon": "mail",
+          "iconImage": "",
+          "featured": false,
+          "badge": "",
+          "enabled": true
+        }
+      ]
+    }
+  ],
+  "footer": {
+    "show": true,
+    "text": "© 2026 Aria Muse",
+    "note": "All payments are voluntary tips. No promises, no pressure — just a muse saying thank you."
+  }
+}
