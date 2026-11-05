@@ -20,6 +20,9 @@
     dataPath: "links/data/links.json",
     assetsDir: "links/assets/img",
     iconDir: "links/assets/icons",
+    /* Shared with the main site admin: the passcode hash lives here so the
+       same password works on both panels and on any device. */
+    authPath: "data/admin.json",
     api: "https://api.github.com"
   };
 
@@ -110,6 +113,43 @@
   function stripRepoPrefix(path) {
     if (!path) return "";
     return path.replace(/^links\//, "");
+  }
+
+  /* -------------------------------------------------------------- auth ---
+   * The passcode is stored as a SHA-256 hash in data/admin.json, which is
+   * shared with the main site admin. Using the same file means one
+   * password works on both panels, and it works on any device — a local
+   * copy in localStorage is only a fast-path / offline fallback.
+   */
+  var remotePasscode = undefined;   // undefined = not fetched yet
+
+  function fetchRemotePasscode() {
+    if (remotePasscode !== undefined) {
+      return Promise.resolve(remotePasscode);
+    }
+    var url = "../../" + CONFIG.authPath + "?t=" + Date.now();
+    return fetch(url, { cache: "no-store" })
+      .then(function (res) {
+        if (!res.ok) return null;
+        return res.json();
+      })
+      .then(function (cfg) {
+        remotePasscode = (cfg && cfg.passcode) ? cfg.passcode : null;
+        return remotePasscode;
+      })
+      .catch(function () {
+        remotePasscode = null;
+        return null;
+      });
+  }
+
+  /** Check a digest against both the remote hash and the local one. */
+  function passcodeMatches(digest) {
+    var local = getSetting(CONFIG.passcodeKey, "");
+    if (local && digest === local) return Promise.resolve(true);
+    return fetchRemotePasscode().then(function (remote) {
+      return !!(remote && digest === remote);
+    });
   }
 
   /* --------------------------------------------------------------- hash */
@@ -357,6 +397,12 @@
 
       var eventName = input.tagName === "SELECT" ? "change" :
         (input.type === "checkbox" ? "change" : "input");
+
+      // The gate can be locked and unlocked repeatedly, and start() runs
+      // each time — without this guard the listener would be attached
+      // again on every unlock, so one keystroke would fire it N times.
+      if (input.dataset.bound === "1") return;
+      input.dataset.bound = "1";
 
       input.addEventListener(eventName, function () {
         var v = input.type === "checkbox" ? input.checked : input.value;
@@ -922,25 +968,155 @@
   }
 
   function initGate() {
-    var stored = getSetting(CONFIG.passcodeKey, "");
     var errorBox = $("gate-error");
 
+    /* ------------------------------------------------------------------
+       The passcode is a SHA-256 hash kept in data/admin.json (shared with
+       the main site admin) and mirrored into this browser's localStorage
+       as a fast path. The gate therefore has three states:
+         setup  — no passcode anywhere → offer to set one right here
+         unlock — a passcode exists    → ask for it
+         reset  — passcode forgotten   → prove ownership with a GitHub token
+       ------------------------------------------------------------------ */
+
+    function currentMode() {
+      return getSetting(CONFIG.passcodeKey, "") ? "unlock" : "setup";
+    }
+
+    function showMode(mode) {
+      $("gate-setup").hidden = mode !== "setup";
+      $("gate-unlock").hidden = mode !== "unlock";
+      $("gate-reset").hidden = mode !== "reset";
+      errorBox.hidden = true;
+    }
+
+    function enterApp() {
+      $("gate").hidden = true;
+      $("app").hidden = false;
+      errorBox.hidden = true;
+      start();
+    }
+
+    function showError(message) {
+      errorBox.textContent = message;
+      errorBox.hidden = false;
+    }
+
+    /* ---- state 2: unlock with an existing passcode ---- */
     function attempt() {
       var value = $("passcode").value;
-      if (!value) return;
+      if (!value) {
+        showError("Please enter your passcode.");
+        return;
+      }
       hash(value).then(function (digest) {
-        if (stored && digest === stored) {
-          $("gate").hidden = true;
-          $("app").hidden = false;
-          errorBox.hidden = true;
-          start();
+        return passcodeMatches(digest);
+      }).then(function (ok) {
+        if (ok) {
+          enterApp();
         } else {
-          errorBox.textContent = stored
-            ? "Wrong passcode."
-            : "No passcode has been set in this browser yet. Set one in Settings.";
-          errorBox.hidden = false;
+          showError("Wrong passcode.");
         }
       });
+    }
+
+    /* ---- state 1: first run — set a passcode immediately ----
+       The hash is mirrored into this browser AND written to the shared
+       data/admin.json (when a GitHub token is available), so the same
+       password works on the main site admin and on any device. */
+    function savePasscode() {
+      var a = $("setup-passcode").value;
+      var b = $("setup-passcode-2").value;
+      if (!a) {
+        showError("Choose a passcode first.");
+        return;
+      }
+      if (a !== b) {
+        showError("The two passcodes do not match.");
+        return;
+      }
+      hash(a).then(function (digest) {
+        setSetting(CONFIG.passcodeKey, digest);
+        $("setup-passcode").value = "";
+        $("setup-passcode-2").value = "";
+        enterApp();
+
+        // Best effort: also publish the hash so the password is not tied to
+        // this browser. Failure is not fatal — the local copy still works.
+        publishPasscode(digest);
+      });
+    }
+
+    function publishPasscode(digest) {
+      var token = (getSetting(CONFIG.tokenKey, "") || "").trim();
+      if (!token) return;
+      var cfg = {
+        owner: (getSetting(CONFIG.ownerKey, DEFAULTS.owner) || DEFAULTS.owner).trim(),
+        repo: (getSetting(CONFIG.repoKey, DEFAULTS.repo) || DEFAULTS.repo).trim(),
+        branch: (getSetting(CONFIG.branchKey, DEFAULTS.branch) || DEFAULTS.branch).trim(),
+        token: token
+      };
+      Promise.all([
+        toBase64(JSON.stringify({ passcode: digest }, null, 2)),
+        ghGetFile(cfg, CONFIG.authPath)
+      ]).then(function (parts) {
+        return ghPutFile(
+          cfg, CONFIG.authPath, parts[0],
+          "Set the shared admin passcode from Links Admin",
+          parts[1] ? parts[1].sha : null
+        );
+      }).then(function () {
+        remotePasscode = digest;
+        toast("Passcode saved and synced to the shared admin file.", "ok");
+      }).catch(function () {
+        toast("Passcode saved in this browser only (could not sync to the server).", "err");
+      });
+    }
+
+    /* ---- state 3: forgotten passcode — reset it with a GitHub token ----
+       The token is only used to read the repository and confirm the caller
+       owns it; it is never written to disk by this flow.               */
+    function resetPasscode() {
+      var token = ($("reset-token").value || "").trim();
+      if (!token) {
+        showError("Paste your GitHub token to continue.");
+        return;
+      }
+      var cfg = {
+        owner: (getSetting(CONFIG.ownerKey, DEFAULTS.owner) || DEFAULTS.owner).trim(),
+        repo: (getSetting(CONFIG.repoKey, DEFAULTS.repo) || DEFAULTS.repo).trim(),
+        branch: (getSetting(CONFIG.branchKey, DEFAULTS.branch) || DEFAULTS.branch).trim(),
+        token: token
+      };
+      var btn = $("reset-btn");
+      btn.disabled = true;
+      btn.textContent = "Verifying…";
+      fetch(CONFIG.api + "/repos/" + cfg.owner + "/" + cfg.repo, {
+        headers: ghHeaders(token)
+      })
+        .then(function (res) {
+          if (!res.ok) {
+            return res.json().then(function (body) {
+              throw new Error(body.message || "HTTP " + res.status);
+            });
+          }
+          return res.json();
+        })
+        .then(function () {
+          // Token is valid for the repository — clear the stale passcode so
+          // the next screen asks the user to set a new one.
+          setSetting(CONFIG.passcodeKey, "");
+          $("reset-token").value = "";
+          showMode("setup");
+          showError("Token verified. Set a new passcode below.");
+        })
+        .catch(function (err) {
+          showError("Could not verify the token: " + (err.message || "unknown error"));
+        })
+        .then(function () {
+          btn.disabled = false;
+          btn.textContent = "Verify & reset";
+        });
     }
 
     $("unlock-btn").addEventListener("click", attempt);
@@ -948,10 +1124,36 @@
       if (e.key === "Enter") attempt();
     });
 
+    $("setup-btn").addEventListener("click", savePasscode);
+    $("setup-passcode-2").addEventListener("keydown", function (e) {
+      if (e.key === "Enter") savePasscode();
+    });
+
+    $("forgot-btn").addEventListener("click", function () {
+      showMode("reset");
+    });
+    $("reset-back").addEventListener("click", function () {
+      showMode(currentMode());
+    });
+    $("reset-btn").addEventListener("click", resetPasscode);
+
     $("logout-btn").addEventListener("click", function () {
       $("gate").hidden = false;
       $("app").hidden = true;
       $("passcode").value = "";
+      showMode(currentMode());
+    });
+
+    // Decide which screen to show. If a passcode already exists on the
+    // server (it is shared with the main site admin) we always ask for it
+    // and never offer to create a new one, so the shared password cannot
+    // be overwritten by accident. Only when there is no passcode anywhere
+    // do we offer the setup screen.
+    showMode("unlock");
+    fetchRemotePasscode().then(function (remote) {
+      if (!getSetting(CONFIG.passcodeKey, "") && !remote) {
+        showMode("setup");
+      }
     });
   }
 
